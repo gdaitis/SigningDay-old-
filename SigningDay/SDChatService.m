@@ -224,6 +224,8 @@
                                         }
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
+                                        
+                                        NSLog(@"user.name = %@",user.name);
                                     }
                                     [context MR_save];
                                     

@@ -211,6 +211,14 @@
 		7BF97ED915D0036C0076368C /* SDUploadService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BF97ED815D0036C0076368C /* SDUploadService.m */; };
 		7BFBC45615C2E1B3008D95E1 /* NSString+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BFBC45415C2E184008D95E1 /* NSString+Additions.m */; };
 		7BFEA60F15C2A1700052A9F5 /* RXCustomTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BFEA60C15C2A13F0052A9F5 /* RXCustomTabBar.m */; };
+		802C5A81174221130034E729 /* SDFollowingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A80174221130034E729 /* SDFollowingCell.xib */; };
+		802C5A8517422C810034E729 /* SDFollowingService.m in Sources */ = {isa = PBXBuildFile; fileRef = 802C5A8417422C810034E729 /* SDFollowingService.m */; };
+		802C5A8A1742470E0034E729 /* FollowingSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A861742470E0034E729 /* FollowingSelected.png */; };
+		802C5A8B1742470E0034E729 /* FollowingSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A871742470E0034E729 /* FollowingSelected@2x.png */; };
+		802C5A8C1742470E0034E729 /* FollowingUnselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A881742470E0034E729 /* FollowingUnselected.png */; };
+		802C5A8D1742470E0034E729 /* FollowingUnselected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A891742470E0034E729 /* FollowingUnselected@2x.png */; };
+		8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071D68F174115B7004CD007 /* SDFollowingViewController.m */; };
+		807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EDD5317411B6F006D973D /* SDFollowingCell.m */; };
 		F1E60ABE16E79B850046FF7C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E60ABD16E79B850046FF7C /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
@@ -514,6 +522,17 @@
 		7BFBC45415C2E184008D95E1 /* NSString+Additions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Additions.m"; sourceTree = "<group>"; };
 		7BFEA60B15C2A13F0052A9F5 /* RXCustomTabBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RXCustomTabBar.h; sourceTree = "<group>"; };
 		7BFEA60C15C2A13F0052A9F5 /* RXCustomTabBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RXCustomTabBar.m; sourceTree = "<group>"; };
+		802C5A80174221130034E729 /* SDFollowingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SDFollowingCell.xib; sourceTree = "<group>"; };
+		802C5A8317422C810034E729 /* SDFollowingService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingService.h; sourceTree = "<group>"; };
+		802C5A8417422C810034E729 /* SDFollowingService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingService.m; sourceTree = "<group>"; };
+		802C5A861742470E0034E729 /* FollowingSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FollowingSelected.png; sourceTree = "<group>"; };
+		802C5A871742470E0034E729 /* FollowingSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FollowingSelected@2x.png"; sourceTree = "<group>"; };
+		802C5A881742470E0034E729 /* FollowingUnselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FollowingUnselected.png; sourceTree = "<group>"; };
+		802C5A891742470E0034E729 /* FollowingUnselected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FollowingUnselected@2x.png"; sourceTree = "<group>"; };
+		8071D68E174115B6004CD007 /* SDFollowingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingViewController.h; sourceTree = "<group>"; };
+		8071D68F174115B7004CD007 /* SDFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingViewController.m; sourceTree = "<group>"; };
+		807EDD5217411B6F006D973D /* SDFollowingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingCell.h; sourceTree = "<group>"; };
+		807EDD5317411B6F006D973D /* SDFollowingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingCell.m; sourceTree = "<group>"; };
 		F1E60ABD16E79B850046FF7C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -546,6 +565,10 @@
 			children = (
 				7BD1D30B15EEC6D600434A3D /* plus_icon.png */,
 				7BD1D30C15EEC6D600434A3D /* plus_icon@2x.png */,
+				802C5A861742470E0034E729 /* FollowingSelected.png */,
+				802C5A871742470E0034E729 /* FollowingSelected@2x.png */,
+				802C5A881742470E0034E729 /* FollowingUnselected.png */,
+				802C5A891742470E0034E729 /* FollowingUnselected@2x.png */,
 				7BD1D30D15EEC6D600434A3D /* done_button@2x.png */,
 				7BD1D30E15EEC6D600434A3D /* done_button.png */,
 				7BD1D30F15EEC6D600434A3D /* check_unselected@2x.png */,
@@ -743,6 +766,11 @@
 				7B9A9E9115E3B028008B7151 /* SDForgotPasswordViewController.m */,
 				7BD5E6B315E2748800240B96 /* SDSharingSettingsViewController.h */,
 				7BD5E6B415E2748800240B96 /* SDSharingSettingsViewController.m */,
+				8071D68E174115B6004CD007 /* SDFollowingViewController.h */,
+				8071D68F174115B7004CD007 /* SDFollowingViewController.m */,
+				807EDD5217411B6F006D973D /* SDFollowingCell.h */,
+				807EDD5317411B6F006D973D /* SDFollowingCell.m */,
+				802C5A80174221130034E729 /* SDFollowingCell.xib */,
 				7B00A13015C6B1F2006D9BDB /* Images & Fonts */,
 				7B73BA7F15B55D9400E5375A /* Custom Classes & Categories */,
 				7B06E5F515AD905400F8F162 /* Supporting Files */,
@@ -843,6 +871,8 @@
 				7B02070E15C0116600951F6C /* SDImageService.m */,
 				7B215D3315CFEA4200FD6769 /* SDProfileService.h */,
 				7B215D3415CFEA4200FD6769 /* SDProfileService.m */,
+				802C5A8317422C810034E729 /* SDFollowingService.h */,
+				802C5A8417422C810034E729 /* SDFollowingService.m */,
 				7BF97ED715D0036C0076368C /* SDUploadService.h */,
 				7BF97ED815D0036C0076368C /* SDUploadService.m */,
 				7BAF2CA915EB9C6D005FE5A9 /* SDErrorService.h */,
@@ -1226,6 +1256,11 @@
 				7B50178F15EF7F73006F7A63 /* SDNewConversationCell.xib in Resources */,
 				7B50179115EF82A6006F7A63 /* SDAddTagsCell.xib in Resources */,
 				7B444D7915F0B4300053F5E5 /* publish_photo_button.png in Resources */,
+				802C5A81174221130034E729 /* SDFollowingCell.xib in Resources */,
+				802C5A8A1742470E0034E729 /* FollowingSelected.png in Resources */,
+				802C5A8B1742470E0034E729 /* FollowingSelected@2x.png in Resources */,
+				802C5A8C1742470E0034E729 /* FollowingUnselected.png in Resources */,
+				802C5A8D1742470E0034E729 /* FollowingUnselected@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1324,6 +1359,9 @@
 				7B50179A15EF9411006F7A63 /* Master.m in Sources */,
 				7B50179D15EF9411006F7A63 /* Message.m in Sources */,
 				7B5017A015EF9411006F7A63 /* Conversation.m in Sources */,
+				8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */,
+				807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */,
+				802C5A8517422C810034E729 /* SDFollowingService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

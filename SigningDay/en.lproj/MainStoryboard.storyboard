@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12C3012" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="7Jo-uX-GGZ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2844" systemVersion="12C54" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="7Jo-uX-GGZ">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1930"/>
     </dependencies>
     <scenes>
         <!--Login View Controller-->
@@ -226,6 +226,21 @@
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ObL-1Y-kbt">
+                                <rect key="frame" x="70" y="65" width="101" height="72"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="1dH-LY-mWD" kind="push" id="DNQ-HQ-uOo"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -468,7 +483,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="1989" y="-1395"/>
+            <point key="canvasLocation" x="1989" y="-1403"/>
         </scene>
         <!--Edit Profile View Controller - Edit profile-->
         <scene sceneID="WeX-aX-Uqg">
@@ -1325,8 +1340,102 @@
             </objects>
             <point key="canvasLocation" x="2677" y="317"/>
         </scene>
+        <!--Following View Controller - Following-->
+        <scene sceneID="dbX-wD-i17">
+            <objects>
+                <tableViewController id="1dH-LY-mWD" customClass="SDFollowingViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="ugc-Ws-nv6">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" text="" id="PSa-Gg-1f7">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textInputTraits key="textInputTraits"/>
+                            <connections>
+                                <outlet property="delegate" destination="1dH-LY-mWD" id="kkB-gw-PGa"/>
+                            </connections>
+                        </searchBar>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FollowingCellID" rowHeight="48" id="wki-wg-qZq" customClass="SDFollowingCell">
+                                <rect key="frame" x="0.0" y="66" width="320" height="48"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="47"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" id="mfu-aw-mnA">
+                                            <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="8nA-Ov-Ord">
+                                            <rect key="frame" x="62" y="13" width="170.5" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <view contentMode="scaleToFill" id="bqi-qG-7Xf">
+                                            <rect key="frame" x="0.0" y="47" width="320" height="1"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        </view>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="58T-g8-Xra">
+                                            <rect key="frame" x="240.5" y="9" width="60" height="29"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                            <state key="normal" image="FollowingUnselected.png">
+                                                <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="selected" image="FollowingSelected.png"/>
+                                            <state key="highlighted">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="followButtonPressed:" destination="1dH-LY-mWD" eventType="touchUpInside" id="lvh-Nx-uUz"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="bottomLine" destination="bqi-qG-7Xf" id="58J-4R-66y"/>
+                                    <outlet property="followButton" destination="58T-g8-Xra" id="9vh-m9-LAd"/>
+                                    <outlet property="userImageView" destination="mfu-aw-mnA" id="gIE-hl-v56"/>
+                                    <outlet property="usernameTitle" destination="8nA-Ov-Ord" id="NTS-pZ-CPP"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="1dH-LY-mWD" id="iWt-zV-kos"/>
+                            <outlet property="delegate" destination="1dH-LY-mWD" id="7FW-Um-gPs"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Following" id="LEW-ma-TZi"/>
+                    <connections>
+                        <outlet property="searchBar" destination="PSa-Gg-1f7" id="nrV-CG-85O"/>
+                        <outlet property="searchDisplayController" destination="V9m-w2-j2o" id="9dc-Ch-Bnc"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xdq-Bq-4NY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="zeA-eB-0Q0">
+                    <connections>
+                        <outlet property="delegate" destination="1dH-LY-mWD" id="ZBd-rD-3Ii"/>
+                        <outlet property="searchBar" destination="PSa-Gg-1f7" id="ul1-n5-Fm1"/>
+                        <outlet property="searchContentsController" destination="1dH-LY-mWD" id="Xt3-xR-YIc"/>
+                        <outlet property="searchResultsDataSource" destination="1dH-LY-mWD" id="HSU-jl-kfc"/>
+                        <outlet property="searchResultsDelegate" destination="1dH-LY-mWD" id="UzX-fk-BpC"/>
+                    </connections>
+                </searchDisplayController>
+            </objects>
+            <point key="canvasLocation" x="2479" y="1332"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="FollowingSelected.png" width="60" height="29"/>
+        <image name="FollowingUnselected.png" width="60" height="29"/>
         <image name="chat_send_message_bg.png" width="320" height="59"/>
         <image name="check_unselected.png" width="36" height="36"/>
         <image name="conversations_bottom.png" width="320" height="60"/>
@@ -1341,6 +1450,171 @@
         <image name="send_button.png" width="76" height="31"/>
         <image name="submit_button.png" width="213" height="38"/>
     </resources>
+    <classes>
+        <class className="RXCustomTabBar" superclassName="UITabBarController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/RXCustomTabBar.h"/>
+        </class>
+        <class className="SDAddTagsCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDAddTagsCell.h"/>
+            <relationships>
+                <relationship kind="outlet" name="bottomLine" candidateClass="UIView"/>
+                <relationship kind="outlet" name="checkboxImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="userImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="userTitleLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="SDAddTagsViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDAddTagsViewController.h"/>
+        </class>
+        <class className="SDCommonWebViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDCommonWebViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="webView" candidateClass="UIWebView"/>
+            </relationships>
+        </class>
+        <class className="SDConversationCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDConversationCell.h"/>
+            <relationships>
+                <relationship kind="outlet" name="bottomLineView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="dateLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="messageTextLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="userImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="usernameLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="SDConversationViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDConversationViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="chatBar" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="containerView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="enterMessageTextView" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="sendButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="tableView" candidateClass="ShadowedTableView"/>
+                <relationship kind="outlet" name="textViewBackgroundImageView" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+        <class className="SDConversationsViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDConversationsViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="tableView" candidateClass="ShadowedTableView"/>
+            </relationships>
+        </class>
+        <class className="SDEditProfileViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDEditProfileViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="submitButtonPressed"/>
+                <relationship kind="outlet" name="bioTextView" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="nameTextView" candidateClass="UITextView"/>
+            </relationships>
+        </class>
+        <class className="SDEnterMediaInfoViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDEnterMediaInfoViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="descriptionTextView" candidateClass="UIPlaceHolderTextView"/>
+                <relationship kind="outlet" name="tagsLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="titleTextView" candidateClass="UIPlaceHolderTextView"/>
+            </relationships>
+        </class>
+        <class className="SDFollowingCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDFollowingCell.h"/>
+            <relationships>
+                <relationship kind="outlet" name="bottomLine" candidateClass="UIView"/>
+                <relationship kind="outlet" name="followButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="userImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="usernameTitle" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="SDFollowingViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDFollowingViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="followButtonPressed:" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="searchBar" candidateClass="UISearchBar"/>
+            </relationships>
+        </class>
+        <class className="SDForgotPasswordViewController" superclassName="SDCommonWebViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDForgotPasswordViewController.h"/>
+        </class>
+        <class className="SDLoginViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDLoginViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="loginButtonPressed:"/>
+                <relationship kind="outlet" name="backgroundImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="passwordTextField" candidateClass="UITextField"/>
+                <relationship kind="outlet" name="usernameTextField" candidateClass="UITextField"/>
+            </relationships>
+        </class>
+        <class className="SDMessageCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDMessageCell.h"/>
+            <relationships>
+                <relationship kind="outlet" name="bottomLineView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="dateLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="messageTextLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="userImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="usernameLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="SDNavigationController" superclassName="UINavigationController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDNavigationController.h"/>
+        </class>
+        <class className="SDNewConversationCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDNewConversationCell.h"/>
+            <relationships>
+                <relationship kind="outlet" name="bottomLine" candidateClass="UIView"/>
+                <relationship kind="outlet" name="userImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="usernameTitle" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="SDNewConversationViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDNewConversationViewController.h"/>
+        </class>
+        <class className="SDPrivacyPolicyViewController" superclassName="SDCommonWebViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDPrivacyPolicyViewController.h"/>
+        </class>
+        <class className="SDProfileViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDProfileViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="avatarImageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="bioTextView" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="followersNumberLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="followingButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="followingNumberLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="nameLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="photosNumberLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="usernameLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="videosNumberLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="SDPublishPhotoTableViewController" superclassName="SDEnterMediaInfoViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDPublishPhotoTableViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="publishPhotoPressed:"/>
+            </relationships>
+        </class>
+        <class className="SDPublishVideoTableViewController" superclassName="SDEnterMediaInfoViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDPublishVideoTableViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="publishVideoPressed:"/>
+            </relationships>
+        </class>
+        <class className="SDSettingsViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDSettingsViewController.h"/>
+        </class>
+        <class className="SDSharingSettingsViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDSharingSettingsViewController.h"/>
+        </class>
+        <class className="SDTabBarController" superclassName="RXCustomTabBar">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDTabBarController.h"/>
+        </class>
+        <class className="SDTermsOfServiceViewController" superclassName="SDCommonWebViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/SDTermsOfServiceViewController.h"/>
+        </class>
+        <class className="ShadowedTableView" superclassName="UITableView">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/ShadowedTableView.h"/>
+        </class>
+        <class className="UIPlaceHolderTextView" superclassName="UITextView">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UIPlaceHolderTextView.h"/>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

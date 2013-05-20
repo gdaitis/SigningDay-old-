@@ -28,6 +28,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UITextView *bioTextView;
 
+@property (weak, nonatomic) IBOutlet UIButton *followingButton;
+
 @property BOOL firstLoad;
 
 - (void)reload;
@@ -147,6 +149,7 @@
     [self setPhotosNumberLabel:nil];
     [self setNameLabel:nil];
     [self setBioTextView:nil];
+    [self setFollowingButton:nil];
     [super viewDidUnload];
 }
 
