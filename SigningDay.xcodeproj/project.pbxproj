@@ -217,6 +217,7 @@
 		802C5A8B1742470E0034E729 /* FollowingSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A871742470E0034E729 /* FollowingSelected@2x.png */; };
 		802C5A8C1742470E0034E729 /* FollowingUnselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A881742470E0034E729 /* FollowingUnselected.png */; };
 		802C5A8D1742470E0034E729 /* FollowingUnselected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A891742470E0034E729 /* FollowingUnselected@2x.png */; };
+		8036F6FE174B92A80054A4E5 /* SDUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8036F6FD174B92A80054A4E5 /* SDUtils.m */; };
 		8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071D68F174115B7004CD007 /* SDFollowingViewController.m */; };
 		807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EDD5317411B6F006D973D /* SDFollowingCell.m */; };
 		F1E60ABE16E79B850046FF7C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E60ABD16E79B850046FF7C /* CoreMedia.framework */; };
@@ -529,6 +530,9 @@
 		802C5A871742470E0034E729 /* FollowingSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FollowingSelected@2x.png"; sourceTree = "<group>"; };
 		802C5A881742470E0034E729 /* FollowingUnselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FollowingUnselected.png; sourceTree = "<group>"; };
 		802C5A891742470E0034E729 /* FollowingUnselected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FollowingUnselected@2x.png"; sourceTree = "<group>"; };
+		8036F6EE174B5CA60054A4E5 /* SigningDay 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SigningDay 2.xcdatamodel"; sourceTree = "<group>"; };
+		8036F6FC174B92A80054A4E5 /* SDUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDUtils.h; sourceTree = "<group>"; };
+		8036F6FD174B92A80054A4E5 /* SDUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDUtils.m; sourceTree = "<group>"; };
 		8071D68E174115B6004CD007 /* SDFollowingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingViewController.h; sourceTree = "<group>"; };
 		8071D68F174115B7004CD007 /* SDFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingViewController.m; sourceTree = "<group>"; };
 		807EDD5217411B6F006D973D /* SDFollowingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingCell.h; sourceTree = "<group>"; };
@@ -711,6 +715,7 @@
 		7B06E5F415AD905200F8F162 /* SigningDay */ = {
 			isa = PBXGroup;
 			children = (
+				8036F6F8174B92880054A4E5 /* Utils */,
 				7B57489A15B8369200D542C4 /* Services */,
 				7B5748A415B94D8F00D542C4 /* Data Models */,
 				7B06E5FD15AD905400F8F162 /* SDAppDelegate.h */,
@@ -1101,6 +1106,15 @@
 			name = RXCustomTabBar;
 			sourceTree = "<group>";
 		};
+		8036F6F8174B92880054A4E5 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				8036F6FC174B92A80054A4E5 /* SDUtils.h */,
+				8036F6FD174B92A80054A4E5 /* SDUtils.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1362,6 +1376,7 @@
 				8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */,
 				807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */,
 				802C5A8517422C810034E729 /* SDFollowingService.m in Sources */,
+				8036F6FE174B92A80054A4E5 /* SDUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1619,9 +1634,10 @@
 		7B5748A515B94DAB00D542C4 /* SigningDay.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				8036F6EE174B5CA60054A4E5 /* SigningDay 2.xcdatamodel */,
 				7B5748A615B94DAB00D542C4 /* SigningDay.xcdatamodel */,
 			);
-			currentVersion = 7B5748A615B94DAB00D542C4 /* SigningDay.xcdatamodel */;
+			currentVersion = 8036F6EE174B5CA60054A4E5 /* SigningDay 2.xcdatamodel */;
 			path = SigningDay.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

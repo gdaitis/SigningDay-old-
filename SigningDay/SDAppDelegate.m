@@ -14,6 +14,7 @@
 #import "Conversation.h"
 #import "STKeychain.h"
 #import "SDLoginService.h"
+#import "SDUtils.h"
 
 NSString * const kSDPushNotificationReceivedWhileInBackgroundNotification = @"SDPushNotificationReceivedWhileInBackgroundNotificationName";
 NSString * const kSDPushNotificationReceivedWhileInForegroundNotification = @"SDPushNotificationReceivedWhileInForegroundNotificationName";
@@ -29,8 +30,10 @@ NSString * const kSDPushNotificationReceivedWhileInForegroundNotification = @"SD
 {
     [application setStatusBarHidden:NO];
     
+    //checks for data migration, and setups suitable stack
+    [SDUtils setupCoreDataStack];
+    
     // Override point for customization after application launch.
-    [MagicalRecord setupCoreDataStack];
     
     // Let the device know we want to receive push notifications
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes: (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
