@@ -210,22 +210,29 @@
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     NSArray *followers = [JSON objectForKey:@"Followers"];
+                                    
+                                    NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+                                    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
+                                    master.followedBy = nil;
+                                    
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
                                         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d AND master.username like %@", [followersUserIdentifier intValue], masterUsername];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
+                                        
                                         if (!user) {
                                             user = [User MR_createInContext:context];
                                             user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
                                             user.username = [userInfo valueForKey:@"Username"];
-                                            Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
                                             user.master = master;
                                         }
+                                        
+                                        if (![master.followedBy containsObject:user]) {
+                                            [master addFollowedByObject:user];
+                                        }
+                                        
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
-                                        
-                                        NSLog(@"user.name = %@",user.name);
                                     }
                                     [context MR_save];
                                     
@@ -294,6 +301,9 @@
                              parameters:nil
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSDictionary *followingDictionary = [JSON objectForKey:@"Following"];
+                                    
+                                    master.following = nil;
+                                    
                                     for (NSDictionary *followingUserDictionary in followingDictionary) {
                                         NSNumber *identifier = [NSNumber numberWithInt:[[followingUserDictionary valueForKey:@"Id"] integerValue]];
                                         User *user = [User MR_findFirstByAttribute:@"identifier" withValue:identifier inContext:context];
@@ -305,6 +315,10 @@
                                         user.avatarUrl = [followingUserDictionary valueForKey:@"AvatarUrl"];
                                         user.name = [followingUserDictionary valueForKey:@"DisplayName"];
                                         user.followedBy = master;
+                                        
+                                        if (![master.following containsObject:user]) {
+                                            [master addFollowingObject:user];
+                                        }
                                     }
                                     [context MR_save];
                                     

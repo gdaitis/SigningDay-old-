@@ -72,7 +72,9 @@
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
     [SDChatService getListOfFollowersForUserWithIdentifier:master.identifier withCompletionBlock:^{
-        [self filterContentForSearchText:@""];
+        [SDChatService getListOfFollowingWithCompletionBlock:^{
+            [self filterContentForSearchText:@""]; 
+        }];
     }];
 }
 
@@ -97,7 +99,7 @@
 {
     self.searchResults = nil;
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
-    NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"master.username like %@", username];
+    NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"following.username like %@", username];
     if ([searchText isEqual:@""]) {
         self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:masterUsernamePredicate];
         [self.tableView reloadData];

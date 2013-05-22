@@ -17,4 +17,7 @@
 + (void)unfollowUserWithIdentifier:(NSNumber *)identifier withCompletionBlock:(void (^)(void))completionBlock failureBlock:(void (^)(void))failureBlock;
 + (void)followUserWithIdentifier:(NSNumber *)identifier withCompletionBlock:(void (^)(void))completionBlock failureBlock:(void (^)(void))failureBlock;
 
+//delete unnecessary users
++ (void)deleteUnnecessaryUsers;
+
 @end

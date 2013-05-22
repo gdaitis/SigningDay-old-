@@ -2,7 +2,7 @@
 //  Master.m
 //  SigningDay
 //
-//  Created by Vytautas Gudaitis on 8/30/12.
+//  Created by Lukas Kekys on 5/21/13.
 //
 //
 
@@ -15,12 +15,13 @@
 
 @dynamic facebookSharingOn;
 @dynamic identifier;
+@dynamic photoGalleryId;
 @dynamic twitterSharingOn;
 @dynamic username;
-@dynamic conversations;
-@dynamic users;
-@dynamic following;
-@dynamic photoGalleryId;
 @dynamic videoGalleryId;
+@dynamic conversations;
+@dynamic followedBy;
+@dynamic following;
+@dynamic users;
 
 @end

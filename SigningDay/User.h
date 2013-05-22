@@ -2,7 +2,7 @@
 //  User.h
 //  SigningDay
 //
-//  Created by Vytautas Gudaitis on 8/30/12.
+//  Created by Lukas Kekys on 5/21/13.
 //
 //
 
@@ -24,9 +24,10 @@
 @property (nonatomic, retain) NSString * username;
 @property (nonatomic, retain) NSSet *authorOf;
 @property (nonatomic, retain) NSSet *conversations;
+@property (nonatomic, retain) Master *followedBy;
+@property (nonatomic, retain) Master *following;
 @property (nonatomic, retain) Master *master;
 @property (nonatomic, retain) NSSet *messages;
-@property (nonatomic, retain) Master *followedBy;
 @end
 
 @interface User (CoreDataGeneratedAccessors)

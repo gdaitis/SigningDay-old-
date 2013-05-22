@@ -10,6 +10,8 @@
 #import "SDAPIClient.h"
 #import "User.h"
 #import "Master.h"
+#import "Conversation.h"
+#import "Message.h"
 #import "AFHTTPRequestOperation.h"
 #import "STKeychain.h"
 
@@ -74,18 +76,24 @@
                              parameters:nil
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+                                    NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+                                    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
+                                    
+                                    master.followedBy = nil;
+                                    
                                     NSArray *followers = [JSON objectForKey:@"Followers"];
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
                                         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d AND master.username like %@", [followersUserIdentifier intValue], masterUsername];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
-                                        Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
                                             user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
                                             user.username = [userInfo valueForKey:@"Username"];
                                             user.master = master;
+                                        }
+                                        if (![master.followedBy containsObject:user]) {
+                                            [master addFollowedByObject:user];
                                         }
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
@@ -143,6 +151,29 @@
                                     if (failureBlock)
                                         failureBlock();
                                 }];
+}
+
++ (void)deleteUnnecessaryUsers
+{
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    
+    NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"master.username like %@", username];
+    NSArray *userArray = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:masterUsernamePredicate];
+    
+    for (User *user in userArray) {
+        if (!user.followedBy && !user.following) {
+            
+            if ([user.conversations count] == 0) {
+                //user doesn't have mutual conversation, and is not being followed or following master user, so it is going to be deleted
+                NSLog(@"user: %@ is going to be deleted", user.name);
+                [context deleteObject:user];
+            }
+        }
+    }
+    [context MR_save];
+    
+    
 }
 
 @end

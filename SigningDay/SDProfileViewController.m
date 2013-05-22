@@ -16,6 +16,7 @@
 #import "SDTabBarController.h"
 #import "MBProgressHUD.h"
 #import "UIImage+Crop.h"
+#import "SDFollowingService.h"
 
 @interface SDProfileViewController () <SDSettingsViewControllerDelegate>
 
@@ -74,6 +75,12 @@
     self.firstLoad = YES;
     
     [self reload];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [SDFollowingService deleteUnnecessaryUsers];
 }
 
 - (void)viewDidAppear:(BOOL)animated

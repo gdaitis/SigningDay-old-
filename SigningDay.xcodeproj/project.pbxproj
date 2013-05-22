@@ -83,7 +83,6 @@
 		7B50178A15EF65E4006F7A63 /* SDAddTagsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50178915EF65E4006F7A63 /* SDAddTagsCell.m */; };
 		7B50178F15EF7F73006F7A63 /* SDNewConversationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B50178E15EF7F73006F7A63 /* SDNewConversationCell.xib */; };
 		7B50179115EF82A6006F7A63 /* SDAddTagsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B50179015EF82A6006F7A63 /* SDAddTagsCell.xib */; };
-		7B50179415EF9411006F7A63 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179315EF9411006F7A63 /* User.m */; };
 		7B50179715EF9411006F7A63 /* ImageData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179615EF9411006F7A63 /* ImageData.m */; };
 		7B50179A15EF9411006F7A63 /* Master.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179915EF9411006F7A63 /* Master.m */; };
 		7B50179D15EF9411006F7A63 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179C15EF9411006F7A63 /* Message.m */; };
@@ -218,6 +217,7 @@
 		802C5A8C1742470E0034E729 /* FollowingUnselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A881742470E0034E729 /* FollowingUnselected.png */; };
 		802C5A8D1742470E0034E729 /* FollowingUnselected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A891742470E0034E729 /* FollowingUnselected@2x.png */; };
 		8036F6FE174B92A80054A4E5 /* SDUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8036F6FD174B92A80054A4E5 /* SDUtils.m */; };
+		8036F70D174BA2430054A4E5 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8036F70C174BA2430054A4E5 /* User.m */; };
 		8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071D68F174115B7004CD007 /* SDFollowingViewController.m */; };
 		807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EDD5317411B6F006D973D /* SDFollowingCell.m */; };
 		F1E60ABE16E79B850046FF7C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E60ABD16E79B850046FF7C /* CoreMedia.framework */; };
@@ -316,8 +316,6 @@
 		7B50178915EF65E4006F7A63 /* SDAddTagsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDAddTagsCell.m; sourceTree = "<group>"; };
 		7B50178E15EF7F73006F7A63 /* SDNewConversationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SDNewConversationCell.xib; sourceTree = "<group>"; };
 		7B50179015EF82A6006F7A63 /* SDAddTagsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SDAddTagsCell.xib; sourceTree = "<group>"; };
-		7B50179215EF9411006F7A63 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		7B50179315EF9411006F7A63 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		7B50179515EF9411006F7A63 /* ImageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageData.h; sourceTree = "<group>"; };
 		7B50179615EF9411006F7A63 /* ImageData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageData.m; sourceTree = "<group>"; };
 		7B50179815EF9411006F7A63 /* Master.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Master.h; sourceTree = "<group>"; };
@@ -533,6 +531,8 @@
 		8036F6EE174B5CA60054A4E5 /* SigningDay 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SigningDay 2.xcdatamodel"; sourceTree = "<group>"; };
 		8036F6FC174B92A80054A4E5 /* SDUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDUtils.h; sourceTree = "<group>"; };
 		8036F6FD174B92A80054A4E5 /* SDUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDUtils.m; sourceTree = "<group>"; };
+		8036F70B174BA2430054A4E5 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		8036F70C174BA2430054A4E5 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		8071D68E174115B6004CD007 /* SDFollowingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingViewController.h; sourceTree = "<group>"; };
 		8071D68F174115B7004CD007 /* SDFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingViewController.m; sourceTree = "<group>"; };
 		807EDD5217411B6F006D973D /* SDFollowingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingCell.h; sourceTree = "<group>"; };
@@ -897,8 +897,8 @@
 				7B50179915EF9411006F7A63 /* Master.m */,
 				7B50179515EF9411006F7A63 /* ImageData.h */,
 				7B50179615EF9411006F7A63 /* ImageData.m */,
-				7B50179215EF9411006F7A63 /* User.h */,
-				7B50179315EF9411006F7A63 /* User.m */,
+				8036F70B174BA2430054A4E5 /* User.h */,
+				8036F70C174BA2430054A4E5 /* User.m */,
 				7B5748A515B94DAB00D542C4 /* SigningDay.xcdatamodeld */,
 			);
 			name = "Data Models";
@@ -1368,7 +1368,6 @@
 				7BD1D2FF15EE3DAF00434A3D /* SDCommonWebViewController.m in Sources */,
 				7B50178315EF619F006F7A63 /* SDAddTagsViewController.m in Sources */,
 				7B50178A15EF65E4006F7A63 /* SDAddTagsCell.m in Sources */,
-				7B50179415EF9411006F7A63 /* User.m in Sources */,
 				7B50179715EF9411006F7A63 /* ImageData.m in Sources */,
 				7B50179A15EF9411006F7A63 /* Master.m in Sources */,
 				7B50179D15EF9411006F7A63 /* Message.m in Sources */,
@@ -1377,6 +1376,7 @@
 				807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */,
 				802C5A8517422C810034E729 /* SDFollowingService.m in Sources */,
 				8036F6FE174B92A80054A4E5 /* SDUtils.m in Sources */,
+				8036F70D174BA2430054A4E5 /* User.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,7 +2,7 @@
 //  User.m
 //  SigningDay
 //
-//  Created by Vytautas Gudaitis on 8/30/12.
+//  Created by Lukas Kekys on 5/21/13.
 //
 //
 
@@ -25,8 +25,9 @@
 @dynamic username;
 @dynamic authorOf;
 @dynamic conversations;
+@dynamic followedBy;
+@dynamic following;
 @dynamic master;
 @dynamic messages;
-@dynamic followedBy;
 
 @end
