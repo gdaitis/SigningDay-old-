@@ -75,7 +75,7 @@
             NSNumber *identifier = [NSNumber numberWithInt:[[participantDictionary valueForKey:@"Id"] intValue]];
             if (![identifier isEqualToNumber:masterUserIndentifier]) {
                 NSNumber *participantUserIdentifier = [NSNumber numberWithInt:[[participantDictionary valueForKey:@"Id"] intValue]];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d AND master.username like %@", [participantUserIdentifier intValue], master.username];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [participantUserIdentifier intValue]];
                 User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                 if (!user) {
                     user = [User MR_createInContext:context];
@@ -209,28 +209,23 @@
                              parameters:nil
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
-                                    NSArray *followers = [JSON objectForKey:@"Followers"];
-                                    
                                     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
                                     Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
+                                    
                                     master.followedBy = nil;
                                     
+                                    NSArray *followers = [JSON objectForKey:@"Followers"];
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d AND master.username like %@", [followersUserIdentifier intValue], masterUsername];
+                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [followersUserIdentifier intValue]];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
-                                        
                                         if (!user) {
                                             user = [User MR_createInContext:context];
                                             user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
                                             user.username = [userInfo valueForKey:@"Username"];
                                             user.master = master;
                                         }
-                                        
-                                        if (![master.followedBy containsObject:user]) {
-                                            [master addFollowedByObject:user];
-                                        }
-                                        
+                                        user.following = master;
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
                                     }
@@ -316,9 +311,6 @@
                                         user.name = [followingUserDictionary valueForKey:@"DisplayName"];
                                         user.followedBy = master;
                                         
-                                        if (![master.following containsObject:user]) {
-                                            [master addFollowingObject:user];
-                                        }
                                     }
                                     [context MR_save];
                                     

@@ -42,7 +42,7 @@
                                     for (NSDictionary *userInfo in followings) {
                                         NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"Id"];
                                         
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d AND master.username like %@", [followingsUserIdentifier intValue], masterUsername];
+                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [followingsUserIdentifier intValue]];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                                         Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
                                         if (!user) {
@@ -52,9 +52,7 @@
                                             user.master = master;
                                             
                                         }
-                                        if (![master.following containsObject:user]) {
-                                            [master addFollowingObject:user];
-                                        }
+                                        user.followedBy = master;
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
                                     }
@@ -84,7 +82,7 @@
                                     NSArray *followers = [JSON objectForKey:@"Followers"];
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d AND master.username like %@", [followersUserIdentifier intValue], masterUsername];
+                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [followersUserIdentifier intValue]];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
@@ -92,9 +90,7 @@
                                             user.username = [userInfo valueForKey:@"Username"];
                                             user.master = master;
                                         }
-                                        if (![master.followedBy containsObject:user]) {
-                                            [master addFollowedByObject:user];
-                                        }
+                                        user.following = master;
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
                                     }

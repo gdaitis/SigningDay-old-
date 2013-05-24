@@ -17,6 +17,7 @@
 #import "MBProgressHUD.h"
 #import "UIImage+Crop.h"
 #import "SDFollowingService.h"
+#import "SDFollowingViewController.h"
 
 @interface SDProfileViewController () <SDSettingsViewControllerDelegate>
 
@@ -163,6 +164,21 @@
 - (void)didReceiveMemoryWarning
 {
     self.avatarImageView.image = nil;
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"Following"])
+    {
+        // Get reference to the destination view controller
+        SDFollowingViewController *targetVC = [segue destinationViewController];
+        targetVC.controllerType = CONTROLLER_TYPE_FOLLOWING;
+    }
+    if ([[segue identifier] isEqualToString:@"Followers"])
+    {
+        SDFollowingViewController *targetVC = [segue destinationViewController];
+        targetVC.controllerType = CONTROLLER_TYPE_FOLLOWERS;
+    }
 }
 
 #pragma mark - SDNavigationController delegate methods

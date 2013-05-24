@@ -21,6 +21,7 @@
 @interface SDFollowingViewController ()
 
 @property (nonatomic, strong) NSArray *searchResults;
+@property (nonatomic, strong) NSMutableSet *userSet;        //as users who are unfollowed should still be visible in the screen, their ids' are stored in this set
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 
 - (void)filterContentForSearchText:(NSString*)searchText;
@@ -36,6 +37,14 @@
 @synthesize delegate    = _delegate;
 @synthesize searchResults = _searchResults;
 @synthesize searchBar     = _searchBar;
+
+- (NSMutableSet *)userSet
+{
+    if (_userSet == nil) {
+        _userSet = [[NSMutableSet alloc] init];
+    }
+    return _userSet;
+}
 
 - (void)awakeFromNib
 {
@@ -75,14 +84,14 @@
     [imageView setFrame:self.tableView.bounds];
     [self.tableView setBackgroundView:imageView];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
-    
-    [self updateInfo];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
+    
+    [self updateInfo];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -111,27 +120,44 @@
     
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     hud.labelText = @"Updating following list";
-    //get list of followers
-    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier withCompletionBlock:^{
-        //get list of followings
-        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withCompletionBlock:^{
-            //refresh the view
-            [self reloadView];
+    
+        //get list of followers
+        [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier withCompletionBlock:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            [self reloadView];
         } failureBlock:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         }];
-        
-    } failureBlock:^{
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-    }];
+    
+        //get list of followings
+        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withCompletionBlock:^{
+            //refresh the view
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            [self reloadView];
+        } failureBlock:^{
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        }];
 }
 
 - (void)filterContentForSearchText:(NSString*)searchText
 {
     self.searchResults = nil;
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
-    NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"master.username like %@", username];
+    
+    NSPredicate *masterUsernamePredicate = nil;
+    
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        masterUsernamePredicate = [NSPredicate predicateWithFormat:@"following.username like %@", username];
+    }
+    else {
+        if (self.userSet.count > 0) {
+            masterUsernamePredicate = [NSPredicate predicateWithFormat:@"identifier IN %@ OR followedBy.username like %@",self.userSet,  username];
+        }
+        else {
+            masterUsernamePredicate = [NSPredicate predicateWithFormat:@"followedBy.username like %@", username];
+        }
+    }
+    
     if ([searchText isEqual:@""]) {
         self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:masterUsernamePredicate];
         [self.tableView reloadData];
@@ -225,6 +251,8 @@
     [self hideKeyboard];
     
     User *user = [self.searchResults objectAtIndex:sender.tag];
+    [self.userSet addObject:user.identifier];
+    
     if (!sender.selected) {
         //following action
         [SDFollowingService followUserWithIdentifier:user.identifier withCompletionBlock:^{
