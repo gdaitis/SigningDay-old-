@@ -146,7 +146,7 @@
     cell.userImageView.image = nil;
     
     User *user = [self.searchResults objectAtIndex:indexPath.row];
-    cell.usernameTitle.text = user.username;
+    cell.usernameTitle.text = user.name;
     cell.userImageUrlString = user.avatarUrl;
     
     return cell;

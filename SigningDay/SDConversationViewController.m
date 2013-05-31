@@ -422,7 +422,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     
     Message *message = [self.messages objectAtIndex:indexPath.row];
     cell.message = message;
-    cell.usernameLabel.text = message.user.username;
+    cell.usernameLabel.text = message.user.name;
     cell.messageTextLabel.text = message.text;
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     
