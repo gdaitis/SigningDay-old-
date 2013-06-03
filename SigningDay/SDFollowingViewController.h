@@ -17,15 +17,8 @@ typedef enum {
 @class SDFollowingViewController;
 @class User;
 
-@protocol SDFollowingViewControllerDelegate <NSObject>
-
-- (void)didFinishSelectingFollowersInFollowingViewController:(SDFollowingViewController *)followingViewController;
-
-@end
-
 @interface SDFollowingViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate>
 
-@property (nonatomic, strong) id <SDFollowingViewControllerDelegate> delegate;
 @property (nonatomic, assign) ControllerType controllerType;
 
 @end

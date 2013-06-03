@@ -30,7 +30,7 @@
 {
     NSString *path = [NSString stringWithFormat:@"users/%d/following.json", [identifier integerValue]];
     [[SDAPIClient sharedClient] getPath:path
-                             parameters:nil
+                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", nil]
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     NSArray *followings = [JSON objectForKey:@"Following"];
@@ -42,7 +42,7 @@
                                     for (NSDictionary *userInfo in followings) {
                                         NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"Id"];
                                         
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [followingsUserIdentifier intValue]];
+                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followingsUserIdentifier];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                                         Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
                                         if (!user) {
@@ -71,7 +71,7 @@
 {
     NSString *path = [NSString stringWithFormat:@"users/%d/followers.json", [identifier integerValue]];
     [[SDAPIClient sharedClient] getPath:path
-                             parameters:nil
+                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", nil]
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
@@ -82,7 +82,7 @@
                                     NSArray *followers = [JSON objectForKey:@"Followers"];
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [followersUserIdentifier intValue]];
+                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followersUserIdentifier];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
@@ -162,8 +162,9 @@
             
             if ([user.conversations count] == 0) {
                 //user doesn't have mutual conversation, and is not being followed or following master user, so it is going to be deleted
-                NSLog(@"user: %@ is going to be deleted", user.name);
-                [context deleteObject:user];
+                if (![user.username isEqualToString:username]) {
+                    [context deleteObject:user];
+                }
             }
         }
     }

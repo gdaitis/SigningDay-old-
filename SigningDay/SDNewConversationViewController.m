@@ -104,7 +104,7 @@
         self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:masterUsernamePredicate];
         [self.tableView reloadData];
     } else {
-        NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@", searchText];
+        NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
         self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:predicate];

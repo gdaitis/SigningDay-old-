@@ -34,7 +34,6 @@
 
 @implementation SDFollowingViewController
 
-@synthesize delegate    = _delegate;
 @synthesize searchResults = _searchResults;
 @synthesize searchBar     = _searchBar;
 
@@ -90,6 +89,13 @@
 {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
+    
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        self.title = @"FOLLOWERS";
+    }
+    else {
+        self.title = @"FOLLOWING";
+    }
     
     [self updateInfo];
 }
@@ -162,7 +168,7 @@
         self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:masterUsernamePredicate];
         [self.tableView reloadData];
     } else {
-        NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@", searchText];
+        NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
         self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:predicate];
@@ -245,7 +251,6 @@
 
 - (IBAction)followButtonPressed:(UIButton *)sender
 {
-#warning change!!! need to delete unfollowed users from db if needed
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     hud.labelText = @"Updating following list";
     [self hideKeyboard];

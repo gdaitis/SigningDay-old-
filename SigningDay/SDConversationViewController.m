@@ -326,7 +326,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     for (User *user in users) {
         if (![user.username isEqual:masterUsername])
-            [usernames addObject:user.username];
+            [usernames addObject:user.name];
     }
     NSArray *sortedUsernames = [usernames sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     self.title = [sortedUsernames componentsJoinedByString:@", "];

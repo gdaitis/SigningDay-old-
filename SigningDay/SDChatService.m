@@ -57,8 +57,7 @@
         
         NSDictionary *authorDictionary = [conversationDictionary valueForKey:@"CreatedUser"];
         NSNumber *authorIdentifier = [NSNumber numberWithInt:[[authorDictionary valueForKey:@"Id"] intValue]];
-        NSString *authorIdentifierString = [NSString stringWithFormat:@"%d", [authorIdentifier intValue]];
-        User *author = [User MR_findFirstByAttribute:@"identifier" withValue:authorIdentifierString];
+        User *author = [User MR_findFirstByAttribute:@"identifier" withValue:authorIdentifier];
         if (!author) {
             author = [User MR_createInContext:context];
             author.identifier = authorIdentifier;
@@ -66,6 +65,8 @@
         author.username = [authorDictionary valueForKey:@"Username"];
         author.avatarUrl = [authorDictionary valueForKey:@"AvatarUrl"];
         author.name = [authorDictionary valueForKey:@"DisplayName"];
+        
+        NSLog(@"author name = %@",[author name]);
         conversation.author = author;
         
         Master *master = [Master MR_findFirstByAttribute:@"username" withValue:[[NSUserDefaults standardUserDefaults] valueForKey:@"username"] inContext:context];
@@ -75,7 +76,7 @@
             NSNumber *identifier = [NSNumber numberWithInt:[[participantDictionary valueForKey:@"Id"] intValue]];
             if (![identifier isEqualToNumber:masterUserIndentifier]) {
                 NSNumber *participantUserIdentifier = [NSNumber numberWithInt:[[participantDictionary valueForKey:@"Id"] intValue]];
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [participantUserIdentifier intValue]];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@",participantUserIdentifier];
                 User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                 if (!user) {
                     user = [User MR_createInContext:context];
@@ -84,6 +85,7 @@
                 user.username = [participantDictionary valueForKey:@"Username"];
                 user.avatarUrl = [participantDictionary valueForKey:@"AvatarUrl"];
                 user.name = [participantDictionary valueForKey:@"DisplayName"];
+                NSLog(@"user name = %@",[user name]);
                 user.master = master;
                 [conversation addUsersObject:user];
             }
@@ -160,6 +162,8 @@
                                         }
                                         user.avatarUrl = [authorDictionary valueForKey:@"AvatarUrl"];
                                         user.username = [authorDictionary valueForKey:@"Username"];
+                                        user.name = [authorDictionary valueForKey:@"DisplayName"];
+                                        
                                         message.user = user;
                                         NSString *dateString = [[messageDictionary objectForKey:@"CreatedDate"] stringByDeletingPathExtension];
                                         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -206,7 +210,7 @@
 {
     NSString *path = [NSString stringWithFormat:@"users/%d/followers.json", [identifier integerValue]];
     [[SDAPIClient sharedClient] getPath:path
-                             parameters:nil
+                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", nil]
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
@@ -217,7 +221,7 @@
                                     NSArray *followers = [JSON objectForKey:@"Followers"];
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %d", [followersUserIdentifier intValue]];
+                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followersUserIdentifier];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
@@ -293,7 +297,7 @@
     NSNumber *identifier = master.identifier;
     NSString *followersPath = [NSString stringWithFormat:@"users/%d/following.json", [identifier integerValue]];
     [[SDAPIClient sharedClient] getPath:followersPath
-                             parameters:nil
+                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", nil]
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSDictionary *followingDictionary = [JSON objectForKey:@"Following"];
                                     
