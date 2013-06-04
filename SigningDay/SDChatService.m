@@ -66,7 +66,6 @@
         author.avatarUrl = [authorDictionary valueForKey:@"AvatarUrl"];
         author.name = [authorDictionary valueForKey:@"DisplayName"];
         
-        NSLog(@"author name = %@",[author name]);
         conversation.author = author;
         
         Master *master = [Master MR_findFirstByAttribute:@"username" withValue:[[NSUserDefaults standardUserDefaults] valueForKey:@"username"] inContext:context];
@@ -85,7 +84,6 @@
                 user.username = [participantDictionary valueForKey:@"Username"];
                 user.avatarUrl = [participantDictionary valueForKey:@"AvatarUrl"];
                 user.name = [participantDictionary valueForKey:@"DisplayName"];
-                NSLog(@"user name = %@",[user name]);
                 user.master = master;
                 [conversation addUsersObject:user];
             }

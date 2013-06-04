@@ -46,7 +46,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-        
+    
     self.title = @"Conversations";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkServer) name:kSDPushNotificationReceivedWhileInBackgroundNotification object:nil];
@@ -69,7 +69,16 @@
     barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
     self.navigationItem.rightBarButtonItem = barButton;
     
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"conversations_bg.png"]];
+    UIImage *bgImage;
+    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+    if (screenSize.height == 480) {
+        bgImage = [UIImage imageNamed:@"conversations_bg.png"];
+    }
+    if (screenSize.height == 568) {
+        bgImage = [UIImage imageNamed:@"conversations_bg-568h@2x.png"];
+    }
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:bgImage];
     [imageView setFrame:self.tableView.bounds];
     [self.tableView setBackgroundView:imageView];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -198,13 +207,13 @@
     SDConversationCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[SDConversationCell alloc]
-                initWithStyle:UITableViewCellStyleDefault 
+                initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
     }
     
     cell.userImageView.image = nil;
     
-    Conversation *conversation = [self.conversations objectAtIndex:indexPath.row];    
+    Conversation *conversation = [self.conversations objectAtIndex:indexPath.row];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     

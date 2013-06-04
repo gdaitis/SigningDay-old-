@@ -118,18 +118,20 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     [imageView setFrame:self.tableView.bounds];
     [self.tableView setBackgroundView:imageView];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
-        
+    
+    int test = self.containerView.frame.size.height;
+    
     self.chatBar.frame = CGRectMake(0.0f, self.containerView.frame.size.height-kChatBarHeight1, self.containerView.frame.size.width, kChatBarHeight1);
     self.chatBar.clearsContextBeforeDrawing = NO;
     self.chatBar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
     self.chatBar.userInteractionEnabled = YES;
-
+    
     self.enterMessageTextView.frame = CGRectMake(9, 13, 217, 32);
     
     self.textViewBackgroundImageView.image = [[UIImage imageNamed:@"conversation_text_view_bg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(8, 6, 8, 6)];
     self.textViewBackgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     self.textViewBackgroundImageView.frame = self.enterMessageTextView.frame;
-
+    
     self.enterMessageTextView.delegate = self;
     self.enterMessageTextView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     self.enterMessageTextView.scrollEnabled = NO; // not initially
@@ -178,31 +180,31 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] removeObserver:self
-//                                                    name:UIKeyboardWillShowNotification
-//                                                  object:nil];
-//    [[NSNotificationCenter defaultCenter] removeObserver:self
-//                                                    name:UIKeyboardWillHideNotification
-//                                                  object:nil];
-//    
-//    self.view.frame = CGRectMake(0, 0, 320, 200);
-//    
-//    [UIView beginAnimations:nil context:nil];
-//    [UIView setAnimationDuration:0.0];
-//    [UIView setAnimationDelay:0.0];
-//    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
-//    
-//    [self.enterMessageTextView becomeFirstResponder];
-//    
-//    [UIView commitAnimations];
-//    
+    //
+    //    [[NSNotificationCenter defaultCenter] removeObserver:self
+    //                                                    name:UIKeyboardWillShowNotification
+    //                                                  object:nil];
+    //    [[NSNotificationCenter defaultCenter] removeObserver:self
+    //                                                    name:UIKeyboardWillHideNotification
+    //                                                  object:nil];
+    //
+    //    self.view.frame = CGRectMake(0, 0, 320, 200);
+    //
+    //    [UIView beginAnimations:nil context:nil];
+    //    [UIView setAnimationDuration:0.0];
+    //    [UIView setAnimationDelay:0.0];
+    //    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
+    //
+    //    [self.enterMessageTextView becomeFirstResponder];
+    //
+    //    [UIView commitAnimations];
+    //
     [self scrollToBottomAnimated:NO];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
-//                                                 name:UIKeyboardWillShowNotification object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:)
-//                                                 name:UIKeyboardWillHideNotification object:nil];
+    //
+    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+    //                                                 name:UIKeyboardWillShowNotification object:nil];
+    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:)
+    //                                                 name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)checkServer
@@ -237,7 +239,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     [self.tableView reloadData];
 }
 
-- (void)sendMessage 
+- (void)sendMessage
 {
     NSString *rightTrimmedMessage = [self.enterMessageTextView.text stringByTrimmingTrailingWhitespaceAndNewlineCharacters];
     
@@ -245,7 +247,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
         [self clearChatInput];
         return;
     }
-  
+    
     [self clearChatInput];
     
     if (!self.conversation.identifier) {
@@ -265,16 +267,16 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     [self scrollToBottomAnimated:YES];
 }
 
-- (void)clearChatInput 
+- (void)clearChatInput
 {
     self.enterMessageTextView.text = @"";
     if (self.previousContentHeight > 22.0f) {
         RESET_CHAT_BAR_HEIGHT;
-        [self scrollToBottomAnimated:YES];       
+        [self scrollToBottomAnimated:YES];
     }
 }
 
-- (void)scrollToBottomAnimated:(BOOL)animated 
+- (void)scrollToBottomAnimated:(BOOL)animated
 {
     NSInteger bottomRow = [self.messages count] - 1;
     if (bottomRow >= 0) {
@@ -283,7 +285,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     }
 }
 
-- (void)viewDidDisappear:(BOOL)animated 
+- (void)viewDidDisappear:(BOOL)animated
 {
     [self.enterMessageTextView resignFirstResponder];
     [super viewDidDisappear:animated];
@@ -300,12 +302,12 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:UIKeyboardWillShowNotification 
-                                                  object:nil]; 
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:UIKeyboardWillHideNotification 
-                                                  object:nil]; 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillShowNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillHideNotification
+                                                  object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -334,17 +336,17 @@ static CGFloat const kChatBarHeight4    = 104.0f;
 
 #pragma mark - Keyboard methods
 
-- (void)keyboardWillShow:(NSNotification *)notification 
+- (void)keyboardWillShow:(NSNotification *)notification
 {
     [self resizeViewWithOptions:[notification userInfo]];
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification 
+- (void)keyboardWillHide:(NSNotification *)notification
 {
     [self resizeViewWithOptions:[notification userInfo]];
 }
 
-- (void)resizeViewWithOptions:(NSDictionary *)options 
+- (void)resizeViewWithOptions:(NSDictionary *)options
 {
     NSTimeInterval animationDuration;
     UIViewAnimationCurve animationCurve;
@@ -381,7 +383,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     }
 }
 
-- (void)disableSendButton 
+- (void)disableSendButton
 {
     if (self.sendButton.enabled == YES) {
         [self resetSendButton];
@@ -429,9 +431,9 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     NSDateComponents *otherDay = [[NSCalendar currentCalendar] components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:message.date];
     NSDateComponents *today = [[NSCalendar currentCalendar] components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:[NSDate date]];
     if ([today day] == [otherDay day] &&
-       [today month] == [otherDay month] &&
-       [today year] == [otherDay year] &&
-       [today era] == [otherDay era]) {
+        [today month] == [otherDay month] &&
+        [today year] == [otherDay year] &&
+        [today era] == [otherDay era]) {
         dateFormatter.dateFormat = @"hh:mm a";
     } else {
         dateFormatter.dateFormat = @"MMM dd";
@@ -483,7 +485,7 @@ static CGFloat const kChatBarHeight4    = 104.0f;
         rightTrimmedText = [textView.text stringByTrimmingTrailingWhitespaceAndNewlineCharacters];
         
         if (contentHeight != self.previousContentHeight) {
-            if (contentHeight <= kContentHeightMax) { 
+            if (contentHeight <= kContentHeightMax) {
                 if (contentHeight == 32) {
                     RESET_CHAT_BAR_HEIGHT;
                 } else {
@@ -493,18 +495,18 @@ static CGFloat const kChatBarHeight4    = 104.0f;
                 if (self.previousContentHeight > kContentHeightMax) {
                     textView.scrollEnabled = NO;
                 }
-                textView.contentOffset = CGPointMake(0.0f, 6.0f); 
+                textView.contentOffset = CGPointMake(0.0f, 6.0f);
                 [self scrollToBottomAnimated:YES];
-            } else if (self.previousContentHeight <= kContentHeightMax) { 
+            } else if (self.previousContentHeight <= kContentHeightMax) {
                 textView.scrollEnabled = YES;
-                textView.contentOffset = CGPointMake(0.0f, contentHeight-63.0f); 
+                textView.contentOffset = CGPointMake(0.0f, contentHeight-63.0f);
                 if (self.previousContentHeight < kContentHeightMax) {
                     EXPAND_CHAT_BAR_HEIGHT;
                     [self scrollToBottomAnimated:YES];
                 }
             }
         }
-    } else { 
+    } else {
         if (self.previousContentHeight > 22.0f) {
             RESET_CHAT_BAR_HEIGHT;
             if (self.previousContentHeight > kContentHeightMax) {

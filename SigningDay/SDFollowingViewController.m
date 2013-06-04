@@ -18,11 +18,19 @@
 
 #import "Master.h"
 
+#define kMaxItemsPerPage    100      //max 100 more info on http://telligent.com/community/developers/w/developer7/29725.list-following-rest-endpoint.aspx
+
 @interface SDFollowingViewController ()
 
 @property (nonatomic, strong) NSArray *searchResults;
 @property (nonatomic, strong) NSMutableSet *userSet;        //as users who are unfollowed should still be visible in the screen, their ids' are stored in this set
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
+
+//Pagination properties/ to keep track of the current page ant etc.
+@property (nonatomic, assign) int totalFollowers;
+@property (nonatomic, assign) int totalFollowings;
+@property (nonatomic, assign) int currentFollowersPage;
+@property (nonatomic, assign) int currentFollowingPage;
 
 - (void)filterContentForSearchText:(NSString*)searchText;
 - (void)hideKeyboard;
@@ -64,6 +72,10 @@
 	// Do any additional setup after loading the view.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:kSDLoginServiceUserDidLogoutNotification object:nil];
+    
+    //set page to zero
+    _currentFollowersPage = _currentFollowingPage = 0;
+    
     
     //adding back button
     UIImage *image = [UIImage imageNamed:@"back_nav_button.png"];
@@ -127,22 +139,37 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     hud.labelText = @"Updating following list";
     
-        //get list of followers
-        [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier withCompletionBlock:^{
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-            [self reloadView];
-        } failureBlock:^{
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-        }];
+    //get list of followers
+    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowerCount) {
+        
+        _totalFollowers = totalFollowerCount; //set the count to know how much we should send
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        [self reloadView];
+    } failureBlock:^{
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+    }];
     
-        //get list of followings
-        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withCompletionBlock:^{
-            //refresh the view
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-            [self reloadView];
-        } failureBlock:^{
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-        }];
+    
+    //get list of followings
+    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowingCount) {
+        //refresh the view
+        _totalFollowings = totalFollowingCount;
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        [self reloadView];
+    } failureBlock:^{
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+    }];
+}
+
+- (void)loadMoreData
+{
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        _currentFollowersPage ++;
+    }
+    else {
+        _currentFollowingPage ++;
+    }
+    [self updateInfo];
 }
 
 - (void)filterContentForSearchText:(NSString*)searchText
@@ -151,11 +178,15 @@
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     
     NSPredicate *masterUsernamePredicate = nil;
+    int fetchLimit = 0;
     
     if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
         masterUsernamePredicate = [NSPredicate predicateWithFormat:@"following.username like %@", username];
+        fetchLimit = (_currentFollowersPage +1) *kMaxItemsPerPage;
     }
     else {
+        fetchLimit = (_currentFollowingPage +1) *kMaxItemsPerPage;
+        
         if (self.userSet.count > 0) {
             masterUsernamePredicate = [NSPredicate predicateWithFormat:@"identifier IN %@ OR followedBy.username like %@",self.userSet,  username];
         }
@@ -165,15 +196,22 @@
     }
     
     if ([searchText isEqual:@""]) {
-        self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:masterUsernamePredicate];
+        
+        //seting fetch limit for pagination
+        NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
+        [request setFetchLimit:fetchLimit];
+        //set sort descriptor
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+        [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+        self.searchResults = [User MR_executeFetchRequest:request];
         [self.tableView reloadData];
     } else {
         NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
-        self.searchResults = [User MR_findAllSortedBy:@"username" ascending:YES withPredicate:predicate];
+        self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
         
-        //reload searchresultstableview tu update cell 
+        //reload searchresultstableview tu update cell
         for (UITableView *tView in self.view.subviews) {
             if ([[tView class] isSubclassOfClass:[UITableView class]]) {
                 [tView reloadData];
@@ -195,43 +233,78 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [self.searchResults count];
+    
+    int result = [self.searchResults count];
+    
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        if ((_currentFollowersPage+1)*kMaxItemsPerPage < _totalFollowers ) {
+            if (result > 0 && [_searchBar.text length] == 0)
+                result ++;
+        }
+    }
+    else {
+        if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings ) {
+            if (result > 0 && [_searchBar.text length] == 0)
+                result ++;
+        }
+    }
+    
+    return result;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *followingCellID = @"FollowingCellID";
-    SDFollowingCell *cell = [tableView dequeueReusableCellWithIdentifier:followingCellID];
-    if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SDFollowingCell" owner:nil options:nil];
-        for (id currentObject in topLevelObjects) {
-            if ([currentObject isKindOfClass:[UITableViewCell class]]) {
-                cell = (SDFollowingCell *) currentObject;
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                break;
+    if (indexPath.row != [self.searchResults count]) {
+        static NSString *followingCellID = @"FollowingCellID";
+        SDFollowingCell *cell = [tableView dequeueReusableCellWithIdentifier:followingCellID];
+        if (cell == nil) {
+            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SDFollowingCell" owner:nil options:nil];
+            for (id currentObject in topLevelObjects) {
+                if ([currentObject isKindOfClass:[UITableViewCell class]]) {
+                    cell = (SDFollowingCell *) currentObject;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    break;
+                }
             }
+            [cell.followButton addTarget:self action:@selector(followButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         }
-        [cell.followButton addTarget:self action:@selector(followButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    cell.followButton.tag = indexPath.row;
-    cell.userImageView.image = nil;
-    
-    User *user = [self.searchResults objectAtIndex:indexPath.row];
-    cell.usernameTitle.text = user.name;
-    cell.userImageUrlString = user.avatarUrl;
-
-    //check for following
-    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
-    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
-    
-    if ([user.followedBy isEqual:master]) {
-        cell.followButton.selected = YES;
+        
+        cell.followButton.tag = indexPath.row;
+        cell.userImageView.image = nil;
+        
+        User *user = [self.searchResults objectAtIndex:indexPath.row];
+        cell.usernameTitle.text = user.name;
+        cell.userImageUrlString = user.avatarUrl;
+        
+        //check for following
+        NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+        Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+        
+        if ([user.followedBy isEqual:master]) {
+            cell.followButton.selected = YES;
+        }
+        else {
+            cell.followButton.selected = NO;
+        }
+        
+        return cell;
     }
     else {
-        cell.followButton.selected = NO;
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        btn.frame = cell.frame;
+        [btn addTarget:self action:@selector(loadMoreData) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:btn];
+        cell.textLabel.textAlignment = UITextAlignmentCenter;
+        cell.textLabel.text = @"Load more data";
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        UIView *cellBackgroundView = [[UIView alloc] init];
+        [cellBackgroundView setBackgroundColor:[UIColor whiteColor]];
+        cell.backgroundView = cellBackgroundView;
+        
+        return cell;
     }
-    
-    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

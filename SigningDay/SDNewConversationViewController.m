@@ -73,7 +73,7 @@
     Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
     [SDChatService getListOfFollowersForUserWithIdentifier:master.identifier withCompletionBlock:^{
         [SDChatService getListOfFollowingWithCompletionBlock:^{
-            [self filterContentForSearchText:@""]; 
+            [self filterContentForSearchText:@""];
         }];
     }];
 }

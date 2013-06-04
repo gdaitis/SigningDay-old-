@@ -1,6 +1,6 @@
 //
 //  RumexCustomTabBar.m
-//  
+//
 //
 //  Created by Oliver Farago on 19/06/2010.
 //  Copyright 2010 Rumex IT All rights reserved.
@@ -33,7 +33,7 @@
 	}
 }
 
-- (void)hideNewTabBar 
+- (void)hideNewTabBar
 {
     [UIView beginAnimations:nil context:nil];
     self.btn1.alpha = 0;
@@ -43,7 +43,7 @@
     [UIView commitAnimations];
 }
 
-- (void)showNewTabBar 
+- (void)showNewTabBar
 {
     [UIView beginAnimations:nil context:nil];
     self.btn1.alpha = 1;
@@ -58,9 +58,11 @@
 	// Initialise our two images
 	UIImage *btnImage = [UIImage imageNamed:@"conversations_tab_inactive.png"];
 	UIImage *btnImageSelected = [UIImage imageNamed:@"conversations_tab_active.png"];
+    
+    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
 	
 	self.btn1 = [UIButton buttonWithType:UIButtonTypeCustom]; //Setup the button
-	btn1.frame = CGRectMake(0, 420, 105, 60); // Set the frame (size and position) of the button)
+	btn1.frame = CGRectMake(0, screenSize.height - 60, 105, 60); // Set the frame (size and position) of the button)
 	[btn1 setBackgroundImage:btnImage forState:UIControlStateNormal]; // Set the image for the normal state of the button
 	[btn1 setBackgroundImage:btnImageSelected forState:UIControlStateSelected]; // Set the image for the selected state of the button
     [btn1 setBackgroundImage:btnImageSelected forState:UIControlStateHighlighted];
@@ -70,14 +72,14 @@
 	// Now we repeat the process for the other buttons
 	btnImage = [UIImage imageNamed:@"photo_tab_inactive.png"];
 	self.btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn2.frame = CGRectMake(105, 420, 110, 60);
+	btn2.frame = CGRectMake(105, screenSize.height - 60, 110, 60);
 	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn2 setTag:-1];
 	
 	btnImage = [UIImage imageNamed:@"profile_tab_inactive.png"];
 	btnImageSelected = [UIImage imageNamed:@"profile_tab_active.png"];
 	self.btn3 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn3.frame = CGRectMake(215, 420, 105, 60);
+	btn3.frame = CGRectMake(215, screenSize.height - 60, 105, 60);
 	[btn3 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn3 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
     [btn3 setBackgroundImage:btnImageSelected forState:UIControlStateHighlighted];
@@ -93,7 +95,7 @@
 	[btn3 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     self.bottomShadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bottom_shadow.png"]];
-    self.bottomShadowImageView.frame = CGRectMake(0, 415, 320, 5);
+    self.bottomShadowImageView.frame = CGRectMake(0, screenSize.height - 65, 320, 5);
     [self.view addSubview:self.bottomShadowImageView];
 }
 
@@ -120,7 +122,7 @@
 			[btn2 setSelected:false];
 			[btn3 setSelected:true];
 			break;
-	}	
+	}
 	self.selectedIndex = tabID;
 }
 
