@@ -19,5 +19,6 @@
 
 //delete unnecessary users
 + (void)deleteUnnecessaryUsers;
++ (void)removeFollowing:(BOOL)removeFollowing andFollowed:(BOOL)removeFollowed;
 
 @end

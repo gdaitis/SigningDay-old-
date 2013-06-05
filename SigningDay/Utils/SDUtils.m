@@ -7,6 +7,8 @@
 //
 
 #import "SDUtils.h"
+#import "Master.h"
+#import "SDFollowingService.h"
 
 @interface SDUtils()
 
