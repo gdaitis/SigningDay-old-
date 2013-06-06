@@ -8,17 +8,18 @@
 
 #import "SDFollowingViewController.h"
 #import "SDFollowingCell.h"
+#import "SDFollowingService.h"
 #import "SDTabBarController.h"
 #import "SDNavigationController.h"
 #import "User.h"
-#import "SDFollowingService.h"
 #import "MBProgressHUD.h"
 #import "SDLoginService.h"
 #import "SDProfileService.h"
+#import "SDUtils.h"
 
 #import "Master.h"
 
-#define kMaxItemsPerPage    100      //max 100 more info on http://telligent.com/community/developers/w/developer7/29725.list-following-rest-endpoint.aspx
+#define kMaxItemsPerPage    20      //max 100 more info on http://telligent.com/community/developers/w/developer7/29725.list-following-rest-endpoint.aspx
 
 @interface SDFollowingViewController ()
 
@@ -76,7 +77,6 @@
     //set page to zero
     _currentFollowersPage = _currentFollowingPage = 0;
     
-    
     //adding back button
     UIImage *image = [UIImage imageNamed:@"back_nav_button.png"];
     CGRect frame = CGRectMake(0, 0, image.size.width, image.size.height);
@@ -116,6 +116,27 @@
 {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
+    
+    //removes users from database, because there is no otherway for updating unfollowed users
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        [SDFollowingService removeFollowing:NO andFollowed:YES];
+    }
+    else {
+        [SDFollowingService removeFollowing:YES andFollowed:NO];
+    }
+}
+
+- (void)removeUsers
+{
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        master.followedBy = nil;
+    }
+    else {
+        master.following = nil;
+    }
+    [SDFollowingService deleteUnnecessaryUsers];
 }
 
 
@@ -140,22 +161,18 @@
     hud.labelText = @"Updating following list";
     
     //get list of followers
-    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowerCount) {
-        
+    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
         _totalFollowers = totalFollowerCount; //set the count to know how much we should send
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-        [self reloadView];
-    } failureBlock:^{
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-    }];
-    
-    
-    //get list of followings
-    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowingCount) {
-        //refresh the view
-        _totalFollowings = totalFollowingCount;
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-        [self reloadView];
+        
+        //get list of followings
+        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
+            //refresh the view
+            _totalFollowings = totalFollowingCount;
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            [self reloadView];
+        } failureBlock:^{
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        }];
     } failureBlock:^{
         [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
     }];
@@ -196,7 +213,6 @@
     }
     
     if ([searchText isEqual:@""]) {
-        
         //seting fetch limit for pagination
         NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
         [request setFetchLimit:fetchLimit];
@@ -210,14 +226,6 @@
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
         self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
-        
-        //reload searchresultstableview tu update cell
-        for (UITableView *tView in self.view.subviews) {
-            if ([[tView class] isSubclassOfClass:[UITableView class]]) {
-                [tView reloadData];
-                break;
-            }
-        }
     }
 }
 
@@ -334,7 +342,15 @@
     if (!sender.selected) {
         //following action
         [SDFollowingService followUserWithIdentifier:user.identifier withCompletionBlock:^{
-            [self updateInfo];
+            
+            //update user
+            NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+            Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+            user.followedBy = master;
+            NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+            [context MR_save];
+            [self reloadTableView];
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         } failureBlock:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         }];
@@ -342,10 +358,30 @@
     else {
         //unfollowing action
         [SDFollowingService unfollowUserWithIdentifier:user.identifier withCompletionBlock:^{
-            [self updateInfo];
+            user.followedBy = nil;
+            NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+            [context MR_save];
+            [self reloadTableView];
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         } failureBlock:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         }];
+    }
+}
+
+- (void)reloadTableView
+{
+    if ([_searchBar.text length] > 0) {
+        //reload searchresultstableview tu update cell
+        for (UITableView *tView in self.view.subviews) {
+            if ([[tView class] isSubclassOfClass:[UITableView class]]) {
+                [tView reloadData];
+                break;
+            }
+        }
+    }
+    else {
+        [self.tableView reloadData];
     }
 }
 

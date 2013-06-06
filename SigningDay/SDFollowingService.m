@@ -28,12 +28,11 @@
 
 + (void)getListOfFollowingsForUserWithIdentifier:(NSNumber *)identifier forPage:(int)pageNumber withCompletionBlock:(void (^)(int totalFollowingCount))completionBlock failureBlock:(void (^)(void))failureBlock
 {
-#warning must add page number, e.g getListOfFollowingsForUserWithIdentifier:id fromPageNumber:
-    
-    
     NSString *path = [NSString stringWithFormat:@"users/%d/following.json", [identifier integerValue]];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"20", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil];
+    
     [[SDAPIClient sharedClient] getPath:path
-                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil]
+                             parameters:dict
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     
@@ -43,14 +42,11 @@
                                     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
                                     Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
                                     
-                                    master.following = nil;
-                                    
                                     for (NSDictionary *userInfo in followings) {
                                         NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"Id"];
                                         
                                         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followingsUserIdentifier];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
-                                        Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
                                             user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
@@ -74,11 +70,11 @@
 
 + (void)getListOfFollowersForUserWithIdentifier:(NSNumber *)identifier forPage:(int)pageNumber withCompletionBlock:(void (^)(int totalFollowerCount))completionBlock failureBlock:(void (^)(void))failureBlock
 {
-#warning must add page number, e.g getListOfFollowersForUserWithIdentifier:id fromPageNumber:
-    
     NSString *path = [NSString stringWithFormat:@"users/%d/followers.json", [identifier integerValue]];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"20", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil];
+    
     [[SDAPIClient sharedClient] getPath:path
-                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil]
+                             parameters:dict
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
@@ -178,7 +174,23 @@
     }
     [context MR_save];
     
+}
+
++ (void)removeFollowing:(BOOL)removeFollowing andFollowed:(BOOL)removeFollowed
+{
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
     
+    if (master) {
+        if (removeFollowed) {
+            master.following = nil;
+        }
+        if (removeFollowing) {
+            master.followedBy = nil;
+        }
+        
+        [SDFollowingService deleteUnnecessaryUsers];
+    }
 }
 
 @end
