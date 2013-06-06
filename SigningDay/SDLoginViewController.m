@@ -34,6 +34,16 @@
     
     UIGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeKeyboard)];
     [self.backgroundImageView addGestureRecognizer:recognizer];
+    
+    UIImage *bgImage;
+    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+    if (screenSize.height == 480) {
+        bgImage = [UIImage imageNamed:@"login_bg.png"];
+    }
+    if (screenSize.height == 568) {
+        bgImage = [UIImage imageNamed:@"login_bg-568h@2x.png"];
+    }
+    self.backgroundImageView.image = bgImage;
 }
 
 - (void)closeKeyboard
