@@ -154,6 +154,7 @@
 		7B6795C415BF066A00C4E00A /* MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B6795A815BF066A00C4E00A /* MagicalRecord.m */; };
 		7B6B1EA71760A78900BC878A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B6B1EA61760A78800BC878A /* Default-568h@2x.png */; };
 		7B6B1EBC1760AA3A00BC878A /* login_bg-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B6B1EBB1760AA3A00BC878A /* login_bg-568h@2x.png */; };
+		7B6B1EBE1760ACC100BC878A /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B6B1EBD1760ACC100BC878A /* MainStoryboard.storyboard */; };
 		7B73BA7A15B5501800E5375A /* SDCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B73BA7915B5501800E5375A /* SDCameraOverlayView.m */; };
 		7B7AFE5F15D94A7C00A07B84 /* SDSimplifiedCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B7AFE5E15D94A7A00A07B84 /* SDSimplifiedCameraOverlayView.m */; };
 		7B7AFE6315D954F800A07B84 /* camera_bottom_bg_simplified@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7AFE6115D954F800A07B84 /* camera_bottom_bg_simplified@2x.png */; };
@@ -221,7 +222,6 @@
 		8036F70D174BA2430054A4E5 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8036F70C174BA2430054A4E5 /* User.m */; };
 		8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071D68F174115B7004CD007 /* SDFollowingViewController.m */; };
 		807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EDD5317411B6F006D973D /* SDFollowingCell.m */; };
-		80E31BFF175E3CC40013545C /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 80E31BFE175E3CC40013545C /* MainStoryboard.storyboard */; };
 		80E31C07175E3E150013545C /* conversations_bg-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 80E31C06175E3E150013545C /* conversations_bg-568h@2x.png */; };
 		F1E60ABE16E79B850046FF7C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E60ABD16E79B850046FF7C /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -446,6 +446,7 @@
 		7B6795AA15BF066A00C4E00A /* CoreData+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CoreData+MagicalRecord.h"; sourceTree = "<group>"; };
 		7B6B1EA61760A78800BC878A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		7B6B1EBB1760AA3A00BC878A /* login_bg-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "login_bg-568h@2x.png"; sourceTree = "<group>"; };
+		7B6B1EBD1760ACC100BC878A /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		7B73BA7815B5501800E5375A /* SDCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDCameraOverlayView.h; sourceTree = "<group>"; };
 		7B73BA7915B5501800E5375A /* SDCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDCameraOverlayView.m; sourceTree = "<group>"; };
 		7B7AFE5D15D94A7800A07B84 /* SDSimplifiedCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDSimplifiedCameraOverlayView.h; sourceTree = "<group>"; };
@@ -541,7 +542,6 @@
 		8071D68F174115B7004CD007 /* SDFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingViewController.m; sourceTree = "<group>"; };
 		807EDD5217411B6F006D973D /* SDFollowingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingCell.h; sourceTree = "<group>"; };
 		807EDD5317411B6F006D973D /* SDFollowingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingCell.m; sourceTree = "<group>"; };
-		80E31BFE175E3CC40013545C /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		80E31C06175E3E150013545C /* conversations_bg-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "conversations_bg-568h@2x.png"; sourceTree = "<group>"; };
 		F1E60ABD16E79B850046FF7C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -727,9 +727,9 @@
 				8036F6F8174B92880054A4E5 /* Utils */,
 				7B57489A15B8369200D542C4 /* Services */,
 				7B5748A415B94D8F00D542C4 /* Data Models */,
+				7B6B1EBD1760ACC100BC878A /* MainStoryboard.storyboard */,
 				7B06E5FD15AD905400F8F162 /* SDAppDelegate.h */,
 				7B06E5FE15AD905400F8F162 /* SDAppDelegate.m */,
-				80E31BFE175E3CC40013545C /* MainStoryboard.storyboard */,
 				7B83CDB215AD979C0097152F /* SDTabBarController.h */,
 				7B83CDB315AD979C0097152F /* SDTabBarController.m */,
 				7BB751DF15C6EAB100A4BA72 /* SDNavigationController.h */,
@@ -1283,10 +1283,10 @@
 				802C5A8B1742470E0034E729 /* FollowingSelected@2x.png in Resources */,
 				802C5A8C1742470E0034E729 /* FollowingUnselected.png in Resources */,
 				802C5A8D1742470E0034E729 /* FollowingUnselected@2x.png in Resources */,
-				80E31BFF175E3CC40013545C /* MainStoryboard.storyboard in Resources */,
 				80E31C07175E3E150013545C /* conversations_bg-568h@2x.png in Resources */,
 				7B6B1EA71760A78900BC878A /* Default-568h@2x.png in Resources */,
 				7B6B1EBC1760AA3A00BC878A /* login_bg-568h@2x.png in Resources */,
+				7B6B1EBE1760ACC100BC878A /* MainStoryboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
