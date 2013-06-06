@@ -29,7 +29,7 @@
 + (void)getListOfFollowingsForUserWithIdentifier:(NSNumber *)identifier forPage:(int)pageNumber withCompletionBlock:(void (^)(int totalFollowingCount))completionBlock failureBlock:(void (^)(void))failureBlock
 {
     NSString *path = [NSString stringWithFormat:@"users/%d/following.json", [identifier integerValue]];
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"20", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil];
     
     [[SDAPIClient sharedClient] getPath:path
                              parameters:dict
@@ -71,7 +71,7 @@
 + (void)getListOfFollowersForUserWithIdentifier:(NSNumber *)identifier forPage:(int)pageNumber withCompletionBlock:(void (^)(int totalFollowerCount))completionBlock failureBlock:(void (^)(void))failureBlock
 {
     NSString *path = [NSString stringWithFormat:@"users/%d/followers.json", [identifier integerValue]];
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"20", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil];
     
     [[SDAPIClient sharedClient] getPath:path
                              parameters:dict

@@ -19,8 +19,6 @@
 
 #import "Master.h"
 
-#define kMaxItemsPerPage    20      //max 100 more info on http://telligent.com/community/developers/w/developer7/29725.list-following-rest-endpoint.aspx
-
 @interface SDFollowingViewController ()
 
 @property (nonatomic, strong) NSArray *searchResults;
@@ -36,7 +34,7 @@
 - (void)filterContentForSearchText:(NSString*)searchText;
 - (void)hideKeyboard;
 - (void)reloadView;
-- (void)updateInfo;
+- (void)updateInfoAndShowActivityIndicator:(BOOL)showActivityIndicator;
 - (IBAction)followButtonPressed:(UIButton *)sender;
 
 @end
@@ -109,7 +107,7 @@
         self.title = @"FOLLOWING";
     }
     
-    [self updateInfo];
+    [self updateInfoAndShowActivityIndicator:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -126,20 +124,6 @@
     }
 }
 
-- (void)removeUsers
-{
-    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
-    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
-    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
-        master.followedBy = nil;
-    }
-    else {
-        master.following = nil;
-    }
-    [SDFollowingService deleteUnnecessaryUsers];
-}
-
-
 - (void)didReceiveMemoryWarning
 {
     int count = [self.tableView numberOfRowsInSection:0];
@@ -152,13 +136,15 @@
 
 #pragma mark - filter & info update
 
-- (void)updateInfo
+- (void)updateInfoAndShowActivityIndicator:(BOOL)showActivityIndicator
 {
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
     
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-    hud.labelText = @"Updating following list";
+    if (showActivityIndicator) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+        hud.labelText = @"Updating following list";
+    }
     
     //get list of followers
     [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
@@ -186,7 +172,9 @@
     else {
         _currentFollowingPage ++;
     }
-    [self updateInfo];
+    
+    //already showing activity indicator in last cell so no need for the MBProgressHUD
+    [self updateInfoAndShowActivityIndicator:NO];
 }
 
 - (void)filterContentForSearchText:(NSString*)searchText
@@ -299,17 +287,17 @@
     }
     else {
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        btn.frame = cell.frame;
-        [btn addTarget:self action:@selector(loadMoreData) forControlEvents:UIControlEventTouchUpInside];
-        [cell addSubview:btn];
-        cell.textLabel.textAlignment = UITextAlignmentCenter;
-        cell.textLabel.text = @"Load more data";
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        activityView.center = cell.center;
+        [cell addSubview:activityView];
+        [activityView startAnimating];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        UIView *cellBackgroundView = [[UIView alloc] init];
-        [cellBackgroundView setBackgroundColor:[UIColor whiteColor]];
-        cell.backgroundView = cellBackgroundView;
+//        UIView *cellBackgroundView = [[UIView alloc] init];
+//        [cellBackgroundView setBackgroundColor:[UIColor whiteColor]];
+//        cell.backgroundView = cellBackgroundView;
+        
+        [self loadMoreData];
         
         return cell;
     }
