@@ -115,13 +115,7 @@
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
     
-    //removes users from database, because there is no otherway for updating unfollowed users
-    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
-        [SDFollowingService removeFollowing:NO andFollowed:YES];
-    }
-    else {
-        [SDFollowingService removeFollowing:YES andFollowed:NO];
-    }
+    [SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -143,7 +137,7 @@
     
     if (showActivityIndicator) {
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-        hud.labelText = @"Updating following list";
+        hud.labelText = @"Updating list";
     }
     
     //get list of followers
@@ -321,7 +315,7 @@
 - (IBAction)followButtonPressed:(UIButton *)sender
 {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-    hud.labelText = @"Updating following list";
+    hud.labelText = @"Updating list";
     [self hideKeyboard];
     
     User *user = [self.searchResults objectAtIndex:sender.tag];

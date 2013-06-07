@@ -11,6 +11,7 @@
 #import "SDUploadService.h"
 #import "Master.h"
 #import "SDAppDelegate.h"
+#import "SDFollowingService.h"
 
 @interface SDPublishPhotoTableViewController ()
 
@@ -24,6 +25,12 @@
     
     SDNavigationController *navigationController = (SDNavigationController *)self.navigationController;
     self.delegate = (id <SDPublishPhotoTableViewControllerDelegate>) navigationController.myDelegate;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (IBAction)publishPhotoPressed:(id)sender

@@ -12,13 +12,21 @@
 #import "Master.h"
 #import "SDChatService.h"
 #import "User.h"
+#import "MBProgressHUD.h"
 #import "SDAddTagsCell.h"
+
+#import "SDFollowingService.h"
 
 @interface SDAddTagsViewController () <UISearchDisplayDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) NSArray *searchResults;
+@property (nonatomic, strong) NSMutableSet *userSet;        //as users who are unfollowed should still be visible in the screen, their ids' are stored in this set
+@property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *selectedTags;
 @property (nonatomic, strong) UIBarButtonItem *doneButtonItem;
+
+@property (nonatomic, assign) int totalFollowings;
+@property (nonatomic, assign) int currentFollowingPage;
 
 - (void)filterContentForSearchText:(NSString*)searchText;
 - (void)checkDoneButton;
@@ -32,6 +40,14 @@
 @synthesize selectedTags = _selectedTags;
 @synthesize doneButtonItem = _doneButtonItem;
 
+- (NSMutableSet *)userSet
+{
+    if (_userSet == nil) {
+        _userSet = [[NSMutableSet alloc] init];
+    }
+    return _userSet;
+}
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -44,13 +60,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
- 
+    
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
+    _currentFollowingPage = 0;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:kSDLoginServiceUserDidLogoutNotification object:nil];
     
     SDNavigationController *navigationController = (SDNavigationController *)self.navigationController;
@@ -78,13 +95,14 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    [self filterContentForSearchText:@""];
-    [SDChatService getListOfFollowingWithCompletionBlock:^{
-        [self filterContentForSearchText:@""];
-    }];
-    
     self.selectedTags = [[NSMutableArray alloc] init];
     [self checkDoneButton];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self updateInfoAndShowActivityIndicator:YES];
 }
 
 - (void)userDidLogout
@@ -92,20 +110,69 @@
     self.searchResults = nil;
 }
 
+#pragma mark - filter & info update
+
+- (void)updateInfoAndShowActivityIndicator:(BOOL)showActivityIndicator
+{
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+    
+    if (showActivityIndicator) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+        hud.labelText = @"Updating list";
+    }
+    
+    //    //get list of followers
+    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
+        _totalFollowings = totalFollowingCount; //set the count to know how much we should send
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        [self reloadView];
+    } failureBlock:^{
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+    }];
+}
+
+- (void)loadMoreData
+{
+    _currentFollowingPage ++;
+    
+    //already showing activity indicator in last cell so no need for the MBProgressHUD
+    [self updateInfoAndShowActivityIndicator:NO];
+}
+
 - (void)filterContentForSearchText:(NSString*)searchText
 {
     self.searchResults = nil;
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    
     NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"followedBy.username like %@", username];
+    int fetchLimit = (_currentFollowingPage +1) *kMaxItemsPerPage;
+    
     if ([searchText isEqual:@""]) {
-        self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:masterUsernamePredicate];
+        //seting fetch limit for pagination
+        NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
+        [request setFetchLimit:fetchLimit];
+        //set sort descriptor
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+        [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+        self.searchResults = [User MR_executeFetchRequest:request];
+        [self.tableView reloadData];
     } else {
-        NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"name contains[cd] %@", searchText];
+        NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
         self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
     }
-    [self.tableView reloadData];
+}
+
+- (void)reloadView
+{
+    if ([_searchBar.text length] > 0) {
+        [self filterContentForSearchText:_searchBar.text];
+    }
+    else {
+        [self filterContentForSearchText:@""];
+    }
 }
 
 - (void)cancelButtonPressed
@@ -116,7 +183,6 @@
 - (void)doneButtonPressed
 {
     [self.delegate addTagsViewController:self didFinishPickingTags:self.selectedTags];
-    
     [self dismissModalViewControllerAnimated:YES];
 }
 
@@ -146,38 +212,62 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [self.searchResults count];
+    int result = [self.searchResults count];
+    
+    if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings ) {
+        if (result > 0 && [_searchBar.text length] == 0)
+            result ++;
+    }
+    
+    return result;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SDAddTagsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AddTagsCell"];
-    if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SDAddTagsCell" owner:nil options:nil];
-        for (id currentObject in topLevelObjects) {
-            if ([currentObject isKindOfClass:[UITableViewCell class]]) {
-                cell = (SDAddTagsCell *) currentObject;
-                break;
+    if (indexPath.row != [self.searchResults count]) {
+        
+        SDAddTagsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AddTagsCell"];
+        if (cell == nil) {
+            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"SDAddTagsCell" owner:nil options:nil];
+            for (id currentObject in topLevelObjects) {
+                if ([currentObject isKindOfClass:[UITableViewCell class]]) {
+                    cell = (SDAddTagsCell *) currentObject;
+                    break;
+                }
             }
         }
-    }
-    
-    cell.userImageView.image = nil;
-    
-    User *user = [self.searchResults objectAtIndex:indexPath.row];
-    
-    for (User *tagUser in [self.delegate arrayOfAlreadySelectedTags]) {
-        if ([tagUser.identifier isEqualToNumber:user.identifier]) {
+        
+        cell.userImageView.image = nil;
+        
+        User *user = [self.searchResults objectAtIndex:indexPath.row];
+//        for (User *tagUser in [self.delegate arrayOfAlreadySelectedTags]) {
+//            if ([tagUser.identifier isEqualToNumber:user.identifier]) {
+//                cell.isChecked = YES;
+//            }
+//        }
+        if ([self.selectedTags containsObject:user]) {
             cell.isChecked = YES;
         }
+        else {
+            cell.isChecked = NO;
+        }
+        
+        cell.userTitleLabel.text = user.name;
+        cell.userAvatarUrlString = user.avatarUrl;
+        [self checkDoneButton];
+        return cell;
     }
-    
-    cell.userTitleLabel.text = user.name;
-    cell.userAvatarUrlString = user.avatarUrl;
-    
-    [self checkDoneButton];
-    
-    return cell;
+    else {
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        activityView.center = cell.center;
+        [cell addSubview:activityView];
+        [activityView startAnimating];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [self loadMoreData];
+        
+        return cell;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -212,6 +302,17 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self filterContentForSearchText:searchText];
+}
+
+- (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+    [self reloadView];
+}
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption
+{
+    [self filterContentForSearchText:[self.searchDisplayController.searchBar text]];
+    return YES;
 }
 
 @end

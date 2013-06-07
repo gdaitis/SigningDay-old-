@@ -67,7 +67,7 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    _currentFollowersPage = 0;
+    _currentFollowersPage = 0; 
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:kSDLoginServiceUserDidLogoutNotification object:nil];
     
@@ -137,12 +137,20 @@
     
     if (showActivityIndicator) {
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-        hud.labelText = @"Updating following list";
+        hud.labelText = @"Updating list";
     }
     
 //    //get list of followers
-    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
-        _totalFollowers = totalFollowerCount; //set the count to know how much we should send
+//    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
+//        _totalFollowers = totalFollowerCount; //set the count to know how much we should send
+//        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+//        [self reloadView];
+//    } failureBlock:^{
+//        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+//    }];
+    
+    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowingCount) {
+        _totalFollowers = totalFollowingCount; //set the count to know how much we should send
         [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         [self reloadView];
     } failureBlock:^{
@@ -163,7 +171,7 @@
     self.searchResults = nil;
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     
-    NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"following.username like %@", username];
+    NSPredicate *masterUsernamePredicate = [NSPredicate predicateWithFormat:@"followedBy.username like %@", username];
     int fetchLimit = (_currentFollowersPage +1) *kMaxItemsPerPage;
     
     if ([searchText isEqual:@""]) {
@@ -279,6 +287,11 @@
 {
     [self filterContentForSearchText:searchString];
     return YES;
+}
+
+- (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+    [self reloadView];
 }
 
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption

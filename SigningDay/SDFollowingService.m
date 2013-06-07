@@ -167,11 +167,13 @@
             if ([user.conversations count] == 0) {
                 //user doesn't have mutual conversation, and is not being followed or following master user, so it is going to be deleted
                 if (![user.username isEqualToString:username]) {
+                    NSLog(@"User: %@ was deleted",user.name);
                     [context deleteObject:user];
                 }
             }
         }
     }
+    
     [context MR_save];
     
 }

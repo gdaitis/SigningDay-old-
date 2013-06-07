@@ -23,6 +23,7 @@
 #import "MBProgressHUD.h"
 #import "SDImageService.h"
 #import "UIImage+Crop.h"
+#import "SDFollowingService.h"
 
 @interface SDConversationsViewController () <SDSettingsViewControllerDelegate>
 
@@ -106,6 +107,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
+    [SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (void)checkServer
