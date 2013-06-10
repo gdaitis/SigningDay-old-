@@ -19,4 +19,6 @@
 + (void)setConversationToRead:(Conversation *)conversation completionBlock:(void (^)(void))completionBlock;
 + (void)getListOfFollowingWithCompletionBlock:(void (^)(void))completionBlock;
 
++ (void)deleteMarkedMessages;
+
 @end

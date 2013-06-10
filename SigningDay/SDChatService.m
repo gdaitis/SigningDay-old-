@@ -30,14 +30,7 @@
 {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     
-    NSArray *conversationsToBeDeleted = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"isRead == %@", [NSNumber numberWithBool:isRead]] inContext:context];
-    for (Conversation *conversation in conversationsToBeDeleted) {
-        conversation.shouldBeDeleted = [NSNumber numberWithBool:YES];
-    }
-    
     NSArray *parsedConversations = [JSON objectForKey:@"Conversations"];
-    if (!isRead)
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:[parsedConversations count]];
     for (NSDictionary *conversationDictionary in parsedConversations) {
         NSString *identifier = [conversationDictionary valueForKey:@"Id"];
         Conversation *conversation = [Conversation MR_findFirstByAttribute:@"identifier" withValue:identifier inContext:context];
@@ -89,12 +82,7 @@
             }
         }
         conversation.master = master;
-        conversation.isRead = [NSNumber numberWithBool:isRead];
-    }
-    
-    for (Conversation *conversation in conversationsToBeDeleted) {
-        if ([conversation.shouldBeDeleted isEqualToNumber:[NSNumber numberWithBool:YES]])
-            [conversation MR_deleteInContext:context];
+        conversation.isRead = [NSNumber numberWithBool:[[conversationDictionary valueForKey:@"HasRead"] boolValue]];
     }
     
     [context MR_save];
@@ -103,33 +91,51 @@
 + (void)getConversationsForPage:(int)pageNumber withSuccessBlock:(void (^)(int totalConversationCount))block failureBlock:(void (^)(void))failureBlock
 {
     [[SDAPIClient sharedClient] getPath:@"conversations.json"
-                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"6", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex",/* @"Unread", @"ReadStatus",*/ nil]
-#warning paging problem
-                               success:^(AFHTTPRequestOperation *operation, id JSON) {
-                                   [self performConversationParsingAndStoringForJSON:JSON forReadMessages:NO];
-                                   
-                                   int totalConversations = [[JSON valueForKey:@"TotalCount"] intValue];
-                                   NSLog(@"total conversations = %d",totalConversations);
-                                   NSLog(@"JSON = %@",JSON);
-                                   
-                                   [[SDAPIClient sharedClient] getPath:@"conversations.json"
-                                                            parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", @"Read", @"ReadStatus", nil] success:^(AFHTTPRequestOperation *operation, id JSON) {
-                                                                
-                                                                [self performConversationParsingAndStoringForJSON:JSON forReadMessages:YES];
-                                                                
-                                                                if (block)
-                                                                    block(totalConversations);
-                                                                
-                                                            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                                                //
-                                                            }];
-                               } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                   //
-                                   [SDErrorService handleError:error];
-                                   if (failureBlock)
-                                       failureBlock();
-                               }];
+                                parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil]
+                                success:^(AFHTTPRequestOperation *operation, id JSON) {
+                                    
+                                    NSLog(@"JSON = %@",JSON);
+                                    
+                                    if (pageNumber == 0) {
+                                        [self markAllMessagesForDeletion];
+                                    }
+                                    [self performConversationParsingAndStoringForJSON:JSON forReadMessages:NO];
+                                    int totalConversations = [[JSON valueForKey:@"TotalCount"] intValue];
+                                    if (block)
+                                        block(totalConversations);
+                                }
+                                failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                    
+                                    [SDErrorService handleError:error];
+                                    if (failureBlock)
+                                        failureBlock();
+                                }];
 }
+
++ (void)markAllMessagesForDeletion
+{
+    NSArray *conversationsToBeDeleted = [Conversation MR_findAll];
+    for (Conversation *conversation in conversationsToBeDeleted) {
+        conversation.shouldBeDeleted = [NSNumber numberWithBool:YES];
+    }
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    [context MR_save];
+}
+
++ (void)deleteMarkedMessages
+{
+    NSArray *conversationsToBeDeleted = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"shouldBeDeleted == %@", [NSNumber numberWithBool:YES]]];
+    for (Conversation *conversation in conversationsToBeDeleted) {
+        [conversation MR_deleteEntity];
+    }
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    [context MR_save];
+    
+    //setup badge on left unread conversations
+    NSArray *unreadConversations = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"isRead == %@", [NSNumber numberWithBool:NO]]];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:[unreadConversations count]];
+}
+
 
 + (void)getMessagesFromConversation:(Conversation *)conversation success:(void (^)(void))block failure:(void (^)(void))failureBlock
 {

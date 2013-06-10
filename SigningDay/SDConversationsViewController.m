@@ -90,11 +90,7 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     self.firstLoad = YES;
-    _currentMessagesPage = 0;
-    _totalMessages = 0;
-    
     self.delegate = (SDTabBarController *)self.tabBarController;
 }
 
@@ -108,10 +104,12 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
     [SDFollowingService removeFollowing:YES andFollowed:YES];
     
-    _currentMessagesPage = 0;
-//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"loggedIn"]) {
-//        [self reload];
-//    }
+    _currentMessagesPage = _totalMessages = 0;
+    if (self.firstLoad) {
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+        hud.labelText = @"Updating conversations";
+    }
     [self checkServer];
 }
 
@@ -123,28 +121,27 @@
 
 - (void)checkServer
 {
-    if (self.firstLoad) {
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-        hud.labelText = @"Updating conversations";
-    }
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"loggedIn"]) {
         
-//        [SDChatService getConversationsForPage:_currentMessagesPage withSuccessBlock:^{
-//            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-//            if (self.firstLoad) {
-//                self.firstLoad = NO;
-//            }
-//            [self reload];
-//        } failureBlock:^{
-//            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-//        }];
         [SDChatService getConversationsForPage:_currentMessagesPage withSuccessBlock:^(int totalConversationCount) {
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
             _totalMessages = totalConversationCount;
-            if (self.firstLoad) {
-                self.firstLoad = NO;
+            
+            //if there are more conversations, we need to download them
+            if ((_currentMessagesPage+1)*kMaxItemsPerPage < _totalMessages )
+            {
+                [self loadMoreData];
             }
-            [self reload];
+            else {
+                if (self.firstLoad) {
+                    self.firstLoad = NO;
+                }
+                //delete old messages
+                [SDChatService deleteMarkedMessages];
+                
+                [self reload];
+                [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            }
+         
         } failureBlock:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         }];
@@ -158,17 +155,16 @@
         string = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"master.username like %@", string];
-//    self.conversations = [Conversation MR_findAllSortedBy:@"lastMessageDate" ascending:NO withPredicate:predicate inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
-//    [self.tableView reloadData];
+    self.conversations = [Conversation MR_findAllSortedBy:@"lastMessageDate" ascending:NO withPredicate:predicate inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    [self.tableView reloadData];
     
     //seting fetch limit for pagination
-    NSFetchRequest *request = [Conversation MR_requestAllWithPredicate:predicate];
-    [request setFetchLimit:(_currentMessagesPage +1) *kMaxItemsPerPage];
-    //set sort descriptor
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastMessageDate" ascending:NO];
-    [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-    self.conversations = [Conversation MR_executeFetchRequest:request];
-    [self.tableView reloadData];
+//    NSFetchRequest *request = [Conversation MR_requestAllWithPredicate:predicate];
+//    //set sort descriptor
+//    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastMessageDate" ascending:NO];
+//    [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+//    self.conversations = [Conversation MR_executeFetchRequest:request];
+//    [self.tableView reloadData];
 }
 
 - (void)settingsPressed
@@ -227,12 +223,6 @@
 {
     // Return the number of rows in the section.
     int result = [self.conversations count];
-    
-    if ((_currentMessagesPage+1)*kMaxItemsPerPage < _totalMessages ) {
-        if (result > 0)
-            result ++;
-    }
-    
     return result;
 }
 
@@ -243,7 +233,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row != [self.conversations count]) {
     static NSString *CellIdentifier = @"ConversationCell";
     
     SDConversationCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -300,22 +289,10 @@
     
     return cell;
 }
-    else {
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        activityView.center = cell.center;
-        [cell addSubview:activityView];
-        [activityView startAnimating];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [self loadMoreData];
-        
-        return cell;
-    }
-}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //[tableView deselectRowAtIndexPath:indexPath animated:YES];
+//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - SDNavigationController delegate methods
