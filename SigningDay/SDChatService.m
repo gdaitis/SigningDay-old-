@@ -100,13 +100,17 @@
     [context MR_save];
 }
 
-+ (void)getConversationsWithSuccessBlock:(void (^)(void))block failureBlock:(void (^)(void))failureBlock
++ (void)getConversationsForPage:(int)pageNumber withSuccessBlock:(void (^)(int totalConversationCount))block failureBlock:(void (^)(void))failureBlock
 {
     [[SDAPIClient sharedClient] getPath:@"conversations.json"
-                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", @"Unread", @"ReadStatus", nil]
+                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"6", @"PageSize",[NSString stringWithFormat:@"%d",pageNumber], @"PageIndex",/* @"Unread", @"ReadStatus",*/ nil]
 #warning paging problem
                                success:^(AFHTTPRequestOperation *operation, id JSON) {
                                    [self performConversationParsingAndStoringForJSON:JSON forReadMessages:NO];
+                                   
+                                   int totalConversations = [[JSON valueForKey:@"TotalCount"] intValue];
+                                   NSLog(@"total conversations = %d",totalConversations);
+                                   NSLog(@"JSON = %@",JSON);
                                    
                                    [[SDAPIClient sharedClient] getPath:@"conversations.json"
                                                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", @"Read", @"ReadStatus", nil] success:^(AFHTTPRequestOperation *operation, id JSON) {
@@ -114,7 +118,7 @@
                                                                 [self performConversationParsingAndStoringForJSON:JSON forReadMessages:YES];
                                                                 
                                                                 if (block)
-                                                                    block();
+                                                                    block(totalConversations);
                                                                 
                                                             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                                                 //

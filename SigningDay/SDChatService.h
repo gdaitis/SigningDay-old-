@@ -11,7 +11,7 @@
 
 @interface SDChatService : NSObject
 
-+ (void)getConversationsWithSuccessBlock:(void (^)(void))block failureBlock:(void (^)(void))failureBlock;
++ (void)getConversationsForPage:(int)pageNumber withSuccessBlock:(void (^)(int totalConversationCount))block failureBlock:(void (^)(void))failureBlock;
 + (void)getMessagesFromConversation:(Conversation *)conversation success:(void (^)(void))block failure:(void (^)(void))failureBlock;
 + (void)sendMessage:(NSString *)messageText forConversation:(Conversation *)conversation completionBlock:(void (^)(void))completionBlock;
 + (void)getListOfFollowersForUserWithIdentifier:(NSNumber *)identifier withCompletionBlock:(void (^)(void))completionBlock;

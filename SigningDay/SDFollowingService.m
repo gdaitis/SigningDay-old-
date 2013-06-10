@@ -37,6 +37,7 @@
                                     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     
                                     int totalUserCount = [[JSON valueForKey:@"TotalCount"] intValue];
+                                    NSLog(@"total followings = %d",totalUserCount);
                                     
                                     NSArray *followings = [JSON objectForKey:@"Following"];
                                     NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
@@ -82,6 +83,8 @@
                                     
                                     master.followedBy = nil;
                                     int totalUserCount = [[JSON valueForKey:@"TotalCount"] intValue];
+                                    
+                                    NSLog(@"total followers = %d",totalUserCount);
                                     
                                     NSArray *followers = [JSON objectForKey:@"Followers"];
                                     for (NSDictionary *userInfo in followers) {

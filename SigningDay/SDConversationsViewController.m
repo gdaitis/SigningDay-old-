@@ -31,6 +31,9 @@
 
 @property (strong, nonatomic) NSArray *conversations;
 @property BOOL firstLoad;
+@property (nonatomic, assign) int totalMessages;
+@property (nonatomic, assign) int currentMessagesPage;
+
 
 - (void)reload;
 - (void)checkServer;
@@ -43,6 +46,8 @@
 @synthesize delegate = _delegate;
 @synthesize conversations = _conversations;
 @synthesize firstLoad = _firstLoad;
+@synthesize totalMessages = _totalMessages;
+@synthesize currentMessagesPage = _currentMessagesPage;
 
 - (void)viewDidLoad
 {
@@ -87,10 +92,8 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     self.firstLoad = YES;
-    
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"loggedIn"]) {
-        [self reload];
-    }
+    _currentMessagesPage = 0;
+    _totalMessages = 0;
     
     self.delegate = (SDTabBarController *)self.tabBarController;
 }
@@ -98,16 +101,24 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"loggedIn"]) {
-        [self reload];
-    }
-    [self checkServer];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
     [SDFollowingService removeFollowing:YES andFollowed:YES];
+    
+    _currentMessagesPage = 0;
+//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"loggedIn"]) {
+//        [self reload];
+//    }
+    [self checkServer];
+}
+
+- (void)loadMoreData
+{
+    _currentMessagesPage++;
+    [self checkServer];
 }
 
 - (void)checkServer
@@ -117,8 +128,19 @@
         hud.labelText = @"Updating conversations";
     }
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"loggedIn"]) {
-        [SDChatService getConversationsWithSuccessBlock:^{
+        
+//        [SDChatService getConversationsForPage:_currentMessagesPage withSuccessBlock:^{
+//            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+//            if (self.firstLoad) {
+//                self.firstLoad = NO;
+//            }
+//            [self reload];
+//        } failureBlock:^{
+//            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+//        }];
+        [SDChatService getConversationsForPage:_currentMessagesPage withSuccessBlock:^(int totalConversationCount) {
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            _totalMessages = totalConversationCount;
             if (self.firstLoad) {
                 self.firstLoad = NO;
             }
@@ -134,8 +156,18 @@
     NSString *string = @"";
     if ([[NSUserDefaults standardUserDefaults] valueForKey:@"username"])
         string = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"master.username like %@", string];
-    self.conversations = [Conversation MR_findAllSortedBy:@"lastMessageDate" ascending:NO withPredicate:predicate inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+//    self.conversations = [Conversation MR_findAllSortedBy:@"lastMessageDate" ascending:NO withPredicate:predicate inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+//    [self.tableView reloadData];
+    
+    //seting fetch limit for pagination
+    NSFetchRequest *request = [Conversation MR_requestAllWithPredicate:predicate];
+    [request setFetchLimit:(_currentMessagesPage +1) *kMaxItemsPerPage];
+    //set sort descriptor
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastMessageDate" ascending:NO];
+    [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    self.conversations = [Conversation MR_executeFetchRequest:request];
     [self.tableView reloadData];
 }
 
@@ -194,7 +226,14 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [self.conversations count];
+    int result = [self.conversations count];
+    
+    if ((_currentMessagesPage+1)*kMaxItemsPerPage < _totalMessages ) {
+        if (result > 0)
+            result ++;
+    }
+    
+    return result;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -204,6 +243,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row != [self.conversations count]) {
     static NSString *CellIdentifier = @"ConversationCell";
     
     SDConversationCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -259,6 +299,18 @@
         cell.backgroundView.backgroundColor = [UIColor whiteColor];
     
     return cell;
+}
+    else {
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        activityView.center = cell.center;
+        [cell addSubview:activityView];
+        [activityView startAnimating];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [self loadMoreData];
+        
+        return cell;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
