@@ -16,6 +16,6 @@
 #endif
 
 
-#define kMaxItemsPerPage    6      //max 100 more info on http://telligent.com/community/developers/w/developer7/29725.list-following-rest-endpoint.aspx
+#define kMaxItemsPerPage    100      //max 100 more info on http://telligent.com/community/developers/w/developer7/29725.list-following-rest-endpoint.aspx
 
 #warning wrong number of kMaxItemsPerPage!!!

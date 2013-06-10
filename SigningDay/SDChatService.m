@@ -97,7 +97,7 @@
                                     NSLog(@"JSON = %@",JSON);
                                     
                                     if (pageNumber == 0) {
-                                        [self markAllMessagesForDeletion];
+                                        [self markAllConversationsForDeletion];
                                     }
                                     [self performConversationParsingAndStoringForJSON:JSON forReadMessages:NO];
                                     int totalConversations = [[JSON valueForKey:@"TotalCount"] intValue];
@@ -112,43 +112,18 @@
                                 }];
 }
 
-+ (void)markAllMessagesForDeletion
-{
-    NSArray *conversationsToBeDeleted = [Conversation MR_findAll];
-    for (Conversation *conversation in conversationsToBeDeleted) {
-        conversation.shouldBeDeleted = [NSNumber numberWithBool:YES];
-    }
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
-    [context MR_save];
-}
-
-+ (void)deleteMarkedMessages
-{
-    NSArray *conversationsToBeDeleted = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"shouldBeDeleted == %@", [NSNumber numberWithBool:YES]]];
-    for (Conversation *conversation in conversationsToBeDeleted) {
-        [conversation MR_deleteEntity];
-    }
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
-    [context MR_save];
-    
-    //setup badge on left unread conversations
-    NSArray *unreadConversations = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"isRead == %@", [NSNumber numberWithBool:NO]]];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:[unreadConversations count]];
-}
-
-
-+ (void)getMessagesFromConversation:(Conversation *)conversation success:(void (^)(void))block failure:(void (^)(void))failureBlock
++ (void)getMessagesWithPageNumber:(int)pageNumber fromConversation:(Conversation *)conversation success:(void (^)(int totalMessagesCount))block failure:(void (^)(void))failureBlock
 {
     NSString *path = [NSString stringWithFormat:@"conversations/%@/messages.json", conversation.identifier];
     [[SDAPIClient sharedClient] getPath:path
-                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", nil]
-#warning paging problem
+                                parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", [NSString stringWithFormat:@"%d",pageNumber], @"PageIndex", nil]
                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
-                                    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
                                     
-                                    NSArray *messagesToBeDeleted = [Message MR_findAllInContext:context];
-                                    for (Message *message in messagesToBeDeleted) {
-                                        message.shouldBeDeleted = [NSNumber numberWithBool:YES];
+                                    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+                                    int totalMessages = [[JSON valueForKey:@"TotalCount"] intValue];
+                                    
+                                    if (pageNumber == 0) {
+                                        [self markAllMessagesForDeletionForConversation:conversation];
                                     }
                                     
                                     NSArray *parsedMessages = [JSON objectForKey:@"Messages"];
@@ -181,15 +156,10 @@
                                         message.text = [[messageDictionary objectForKey:@"Body"] stringByConvertingHTMLToPlainText];
                                     }
                                     
-                                    for (Message *message in messagesToBeDeleted) {
-                                        if ([message.shouldBeDeleted isEqualToNumber:[NSNumber numberWithBool:YES]])
-                                            [message MR_deleteInContext:context];
-                                    }
-                                    
                                     [context MR_save];
                                     
                                     if (block) {
-                                        block();
+                                        block(totalMessages);
                                     }
                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                     [SDErrorService handleError:error];
@@ -334,6 +304,57 @@
                                     [MBProgressHUD hideAllHUDsForView:appDelegate.window animated:YES];
                                     [SDErrorService handleError:error];
                                 }];
+}
+
+
+
+#pragma mark deletion methods
+
+//marks conversations for deletion
++ (void)markAllConversationsForDeletion
+{
+    NSArray *conversationsToBeDeleted = [Conversation MR_findAll];
+    for (Conversation *conversation in conversationsToBeDeleted) {
+        conversation.shouldBeDeleted = [NSNumber numberWithBool:YES];
+    }
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    [context MR_save];
+}
+
++ (void)deleteMarkedConversations
+{
+    NSArray *conversationsToBeDeleted = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"shouldBeDeleted == %@", [NSNumber numberWithBool:YES]]];
+    for (Conversation *conversation in conversationsToBeDeleted) {
+        [conversation MR_deleteEntity];
+    }
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    [context MR_save];
+    
+    //setup badge on left unread conversations
+    NSArray *unreadConversations = [Conversation MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"isRead == %@", [NSNumber numberWithBool:NO]]];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:[unreadConversations count]];
+}
+
++ (void)markAllMessagesForDeletionForConversation:(Conversation *)conversation
+{
+    for (Message *message in conversation.messages) {
+        message.shouldBeDeleted = [NSNumber numberWithBool:YES];
+    }
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    [context MR_save];
+}
+
++ (void)deleteMarkedMessagesForConversation:(Conversation *)conversation
+{
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    NSSet *messages = conversation.messages;
+    for (Message *mesage in messages)
+    {
+        if ([mesage.shouldBeDeleted boolValue]) {
+            [mesage MR_deleteInContext:context];
+        }
+    }
+    [context MR_save];
 }
 
 @end

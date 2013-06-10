@@ -136,7 +136,7 @@
                     self.firstLoad = NO;
                 }
                 //delete old messages
-                [SDChatService deleteMarkedMessages];
+                [SDChatService deleteMarkedConversations];
                 
                 [self reload];
                 [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
@@ -157,14 +157,6 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"master.username like %@", string];
     self.conversations = [Conversation MR_findAllSortedBy:@"lastMessageDate" ascending:NO withPredicate:predicate inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     [self.tableView reloadData];
-    
-    //seting fetch limit for pagination
-//    NSFetchRequest *request = [Conversation MR_requestAllWithPredicate:predicate];
-//    //set sort descriptor
-//    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastMessageDate" ascending:NO];
-//    [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-//    self.conversations = [Conversation MR_executeFetchRequest:request];
-//    [self.tableView reloadData];
 }
 
 - (void)settingsPressed

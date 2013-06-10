@@ -58,6 +58,9 @@ static CGFloat const kChatBarHeight4    = 104.0f;
 @property (nonatomic, assign) CGFloat previousContentHeight;
 @property BOOL firstLoad;
 
+@property (nonatomic, assign) int totalMessages;
+@property (nonatomic, assign) int currentMessagesPage;
+
 - (void)checkServer;
 - (void)reload;
 - (void)clearChatInput;
@@ -119,8 +122,6 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     [self.tableView setBackgroundView:imageView];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     
-    int test = self.containerView.frame.size.height;
-    
     self.chatBar.frame = CGRectMake(0.0f, self.containerView.frame.size.height-kChatBarHeight1, self.containerView.frame.size.width, kChatBarHeight1);
     self.chatBar.clearsContextBeforeDrawing = NO;
     self.chatBar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
@@ -156,71 +157,64 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     self.sendButton.frame = CGRectMake(self.sendButton.frame.origin.x, 15, self.sendButton.frame.size.width, self.sendButton.frame.size.height);
     [self resetSendButton]; // disable initially
     [self.chatBar addSubview:self.sendButton];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
+    [self scrollToBottomAnimated:NO];
     
-    [self reload];
+    //reset messages
+    _currentMessagesPage = _totalMessages = 0;
+    if (self.firstLoad) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+        hud.labelText = @"Updating chat";
+    }
+    [self checkServer];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    [self checkServer];
-    
     if (!self.isNewConversation && ![self.conversation.isRead boolValue]) {
         [SDChatService setConversationToRead:self.conversation completionBlock:^{
-            NSLog(@"Conversation set to read successfully");
         }];
     }
     if (self.isNewConversation)
         [self.enterMessageTextView becomeFirstResponder];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)loadMoreData
 {
-    [super viewWillAppear:animated];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
-    //
-    //    [[NSNotificationCenter defaultCenter] removeObserver:self
-    //                                                    name:UIKeyboardWillShowNotification
-    //                                                  object:nil];
-    //    [[NSNotificationCenter defaultCenter] removeObserver:self
-    //                                                    name:UIKeyboardWillHideNotification
-    //                                                  object:nil];
-    //
-    //    self.view.frame = CGRectMake(0, 0, 320, 200);
-    //
-    //    [UIView beginAnimations:nil context:nil];
-    //    [UIView setAnimationDuration:0.0];
-    //    [UIView setAnimationDelay:0.0];
-    //    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
-    //
-    //    [self.enterMessageTextView becomeFirstResponder];
-    //
-    //    [UIView commitAnimations];
-    //
-    [self scrollToBottomAnimated:NO];
-    //
-    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
-    //                                                 name:UIKeyboardWillShowNotification object:nil];
-    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:)
-    //                                                 name:UIKeyboardWillHideNotification object:nil];
+    _currentMessagesPage++;
+    [self checkServer];
 }
 
 - (void)checkServer
 {
-    NSLog(@"Updating data from server");
     if (self.conversation.identifier) {
-        if (self.firstLoad) {
-            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-            hud.labelText = @"Updating chat";
-        }
-        [SDChatService getMessagesFromConversation:self.conversation success:^{
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-            if (self.firstLoad)
-                self.firstLoad = NO;
-            [self reload];
-            [self scrollToBottomAnimated:YES];
+        
+        [SDChatService getMessagesWithPageNumber:_currentMessagesPage fromConversation:self.conversation success:^(int totalMessagesCount) {
+
+            _totalMessages = totalMessagesCount;
+            //if there are more conversations, we need to download them
+            if ((_currentMessagesPage+1)*kMaxItemsPerPage < _totalMessages )
+            {
+                [self loadMoreData];
+            }
+            else {
+                if (self.firstLoad) {
+                    self.firstLoad = NO;
+                }
+                //delete old messages
+                [SDChatService deleteMarkedMessagesForConversation:self.conversation];
+                [self reload];
+                [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+                [self scrollToBottomAnimated:YES];
+            }
+            
         } failure:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         }];
@@ -234,7 +228,6 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     NSArray *unsortedMessages = [self.conversation.messages allObjects];
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
     self.messages = [unsortedMessages sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-    NSLog(@"Messages array is reloading");
     
     [self.tableView reloadData];
 }
