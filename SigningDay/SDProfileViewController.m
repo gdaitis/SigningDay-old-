@@ -81,7 +81,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [SDFollowingService deleteUnnecessaryUsers];
+    [SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated

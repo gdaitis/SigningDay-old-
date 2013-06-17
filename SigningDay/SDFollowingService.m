@@ -156,6 +156,94 @@
                                 }];
 }
 
+#pragma mark - Search webservice
+
++ (void)getListOfFollowingsForUserWithIdentifier:(NSNumber *)identifier withSearchString:(NSString *)searchString withCompletionBlock:(void (^)(void))completionBlock failureBlock:(void (^)(void))failureBlock
+{
+    NSString *path = [NSString stringWithFormat:@"sd/following.json"];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"10", @"MaxRows",[NSString stringWithFormat:@"%d",[identifier intValue]], @"UserId",searchString, @"SearchString", nil];
+    
+    [[SDAPIClient sharedClient] postPath:path
+                                parameters:dict
+                                success:^(AFHTTPRequestOperation *operation, id JSON) {
+                                    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+                                    
+                                    NSArray *results = [JSON objectForKey:@"Results"];
+                                    NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+                                    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
+                                    
+                                    for (NSDictionary *userInfo in results) {
+                                        
+                                        NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"UserId"];
+                                        User *user = [User MR_findFirstByAttribute:@"identifier" withValue:followingsUserIdentifier];
+                                        
+                                        if (!user) {
+                                            user = [User MR_createInContext:context];
+                                            user.identifier = followingsUserIdentifier;
+                                            user.username = [userInfo valueForKey:@"Username"];
+                                        }
+                                        user.master = master;
+                                        user.followedBy = master;
+                                        user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
+                                        user.name = [userInfo valueForKey:@"DisplayName"];
+                                        
+                                    }
+                                    [context MR_save];
+                                    
+                                    if (completionBlock)
+                                        completionBlock();
+                                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                    [SDErrorService handleError:error];
+                                    if (failureBlock)
+                                        failureBlock();
+                                }];
+}
+
+
++ (void)getListOfFollowersForUserWithIdentifier:(NSNumber *)identifier withSearchString:(NSString *)searchString withCompletionBlock:(void (^)(void))completionBlock failureBlock:(void (^)(void))failureBlock
+{
+
+    NSString *path = [NSString stringWithFormat:@"sd/followers.json"];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"10", @"MaxRows",[NSString stringWithFormat:@"%d",[identifier intValue]], @"UserId",searchString, @"SearchString", nil];
+    
+    [[SDAPIClient sharedClient] postPath:path
+                                parameters:dict
+                                success:^(AFHTTPRequestOperation *operation, id JSON) {
+                                    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+                                    NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+                                    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
+                                    
+                                    NSArray *results = [JSON objectForKey:@"Results"];
+                                    for (NSDictionary *userInfo in results) {
+
+                                        NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"UserId"];
+                                        User *user = [User MR_findFirstByAttribute:@"identifier" withValue:followingsUserIdentifier];
+                                        
+                                        if (!user) {
+                                            user = [User MR_createInContext:context];
+                                            user.identifier = followingsUserIdentifier;
+                                            user.username = [userInfo valueForKey:@"Username"];
+                                        }
+
+                                        user.master = master;
+                                        user.following = master;
+                                        user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
+                                        user.name = [userInfo valueForKey:@"DisplayName"];
+                                    }
+                                    [context MR_save];
+                                    
+                                    if (completionBlock)
+                                        completionBlock();
+                                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                    [SDErrorService handleError:error];
+                                    if (failureBlock)
+                                        failureBlock();
+                                }];
+}
+
+
+#pragma mark - User deletion
+
 + (void)deleteUnnecessaryUsers
 {
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];

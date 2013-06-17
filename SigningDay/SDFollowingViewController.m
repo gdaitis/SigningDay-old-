@@ -24,6 +24,7 @@
 @property (nonatomic, strong) NSArray *searchResults;
 @property (nonatomic, strong) NSMutableSet *userSet;        //as users who are unfollowed should still be visible in the screen, their ids' are stored in this set
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, assign) BOOL searchActive;
 
 //Pagination properties/ to keep track of the current page ant etc.
 @property (nonatomic, assign) int totalFollowers;
@@ -140,10 +141,7 @@
         hud.labelText = @"Updating list";
     }
     
-    //get list of followers
-    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
-        _totalFollowers = totalFollowerCount; //set the count to know how much we should send
-        
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWING) {
         //get list of followings
         [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
             //refresh the view
@@ -153,9 +151,17 @@
         } failureBlock:^{
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         }];
-    } failureBlock:^{
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-    }];
+    }
+    else {
+        //get list of followers
+        [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
+            _totalFollowers = totalFollowerCount; //set the count to know how much we should send
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            [self reloadView];
+        } failureBlock:^{
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        }];
+    }
 }
 
 - (void)loadMoreData
@@ -202,13 +208,13 @@
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
         [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
         self.searchResults = [User MR_executeFetchRequest:request];
-        [self.tableView reloadData];
     } else {
         NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
         self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
     }
+    [self reloadTableView];
 }
 
 
@@ -228,16 +234,41 @@
     
     if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
         if ((_currentFollowersPage+1)*kMaxItemsPerPage < _totalFollowers ) {
-            if (result > 0 && [_searchBar.text length] == 0)
-                result ++;
+            if (result > 0)
+            {
+                if ([_searchBar.text length] == 0) {
+                    result ++;
+                }
+                else
+                {
+                    if (_searchActive) {
+                        //search active, we show loading indicator at bottom
+                        result++;
+                    }
+                }
+            }
         }
     }
     else {
         if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings ) {
-            if (result > 0 && [_searchBar.text length] == 0)
-                result ++;
+            if (result > 0)
+            {
+                if ([_searchBar.text length] == 0) {
+                    result ++;
+                }
+                else
+                {
+                    if (_searchActive) {
+                        //search active, we show loading indicator at bottom
+                        result++;
+                    }
+                }
+            }
         }
     }
+    
+    NSLog(@"result count = %d",[self.searchResults count]);
+    NSLog(@"returning count = %d",result);
     
     return result;
 }
@@ -281,17 +312,21 @@
     }
     else {
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        UIActivityIndicatorViewStyle activityViewStyle = UIActivityIndicatorViewStyleWhite;
+        
+        if ([_searchBar.text length] > 0) {
+            activityViewStyle = UIActivityIndicatorViewStyleGray;
+        }
+        
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:activityViewStyle];
         activityView.center = cell.center;
         [cell addSubview:activityView];
         [activityView startAnimating];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-//        UIView *cellBackgroundView = [[UIView alloc] init];
-//        [cellBackgroundView setBackgroundColor:[UIColor whiteColor]];
-//        cell.backgroundView = cellBackgroundView;
-        
-        [self loadMoreData];
+        if (!_searchActive) {
+            [self loadMoreData];
+        }
         
         return cell;
     }
@@ -388,7 +423,31 @@
 
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
+    _searchActive = YES;
+    //filter users in local DB
     [self filterContentForSearchText:searchString];
+    
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
+            _searchActive = NO;
+            //in case later request will finish first, use _searchBar.text
+            [self filterContentForSearchText:_searchBar.text];
+        } failureBlock:^{
+            _searchActive = NO;
+        }];
+    }
+    else {
+        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
+            _searchActive = NO;
+            //in case later request will finish first, use _searchBar.text
+            [self filterContentForSearchText:_searchBar.text];
+        } failureBlock:^{
+            _searchActive = NO;
+        }];
+    }
+    
     return YES;
 }
 
