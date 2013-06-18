@@ -229,6 +229,15 @@
                                         user.following = master;
                                         user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
                                         user.name = [userInfo valueForKey:@"DisplayName"];
+                                        
+                                        if (![[userInfo valueForKey:@"CanFollow"] boolValue]) {
+                                            //can't follow (isFollowing master user)
+                                            user.followedBy = master;
+                                        }
+                                        else {
+                                            //not following
+                                            user.followedBy = nil;
+                                        }
                                     }
                                     [context MR_save];
                                     

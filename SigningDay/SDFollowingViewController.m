@@ -429,23 +429,31 @@
     
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+    
     if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
-        [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
-            _searchActive = NO;
-            //in case later request will finish first, use _searchBar.text
-            [self filterContentForSearchText:_searchBar.text];
-        } failureBlock:^{
-            _searchActive = NO;
-        }];
+        
+        if ((_currentFollowersPage+1)*kMaxItemsPerPage < _totalFollowers ) { //if all users are already downloaded we do not need additional call to webservice
+            
+            [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
+                _searchActive = NO;
+                //in case later request will finish first, use _searchBar.text
+                [self filterContentForSearchText:_searchBar.text];
+            } failureBlock:^{
+                _searchActive = NO;
+            }];
+        }
     }
     else {
-        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
-            _searchActive = NO;
-            //in case later request will finish first, use _searchBar.text
-            [self filterContentForSearchText:_searchBar.text];
-        } failureBlock:^{
-            _searchActive = NO;
-        }];
+        if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings ) { //if all users are already downloaded we do not need additional call to webservice
+            
+            [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
+                _searchActive = NO;
+                //in case later request will finish first, use _searchBar.text
+                [self filterContentForSearchText:_searchBar.text];
+            } failureBlock:^{
+                _searchActive = NO;
+            }];
+        }
     }
     
     return YES;
