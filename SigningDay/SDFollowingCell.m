@@ -8,11 +8,13 @@
 
 #import "SDFollowingCell.h"
 #import "SDImageService.h"
+#import "AFImageRequestOperation.h"
 #import "UIImage+Crop.h"
 
 @interface SDFollowingCell ()
 
 @property (weak, nonatomic) IBOutlet UIView *bottomLine;
+@property (weak, nonatomic) AFImageRequestOperation *currentOperation;
 
 @end
 

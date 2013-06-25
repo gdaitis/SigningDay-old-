@@ -205,7 +205,7 @@
         NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
         [request setFetchLimit:fetchLimit];
         //set sort descriptor
-        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
         [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
         self.searchResults = [User MR_executeFetchRequest:request];
     } else {
@@ -266,9 +266,6 @@
             }
         }
     }
-    
-    NSLog(@"result count = %d",[self.searchResults count]);
-    NSLog(@"returning count = %d",result);
     
     return result;
 }
