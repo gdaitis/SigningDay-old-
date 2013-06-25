@@ -8,11 +8,13 @@
 
 #import "SDFollowingCell.h"
 #import "SDImageService.h"
+#import "AFImageRequestOperation.h"
 #import "UIImage+Crop.h"
 
 @interface SDFollowingCell ()
 
 @property (weak, nonatomic) IBOutlet UIView *bottomLine;
+@property (weak, nonatomic) AFImageRequestOperation *currentOperation;
 
 @end
 
@@ -41,7 +43,12 @@
 
 - (void)setUserImageUrlString:(NSString *)userImageUrlString
 {
-    [[SDImageService sharedService] getImageWithURLString:userImageUrlString success:^(UIImage *image) {
+    self.userImageView.image = nil;
+    if (_currentOperation) {
+        [_currentOperation cancel];
+        _currentOperation = nil;
+    }
+    self.currentOperation = [[SDImageService sharedService] getImageWithURLString:userImageUrlString success:^(UIImage *image) {
         self.userImageView.image = [image imageByScalingAndCroppingForSize:CGSizeMake(48 * [UIScreen mainScreen].scale, 48 * [UIScreen mainScreen].scale)];
     }];
 }

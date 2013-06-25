@@ -20,10 +20,11 @@
 @interface SDAddTagsViewController () <UISearchDisplayDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) NSArray *searchResults;
-@property (nonatomic, strong) NSMutableSet *userSet;        //as users who are unfollowed should still be visible in the screen, their ids' are stored in this set
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray *selectedTags;
 @property (nonatomic, strong) UIBarButtonItem *doneButtonItem;
+
+@property (nonatomic, assign) BOOL searchActive;
 
 @property (nonatomic, assign) int totalFollowings;
 @property (nonatomic, assign) int currentFollowingPage;
@@ -40,13 +41,6 @@
 @synthesize selectedTags = _selectedTags;
 @synthesize doneButtonItem = _doneButtonItem;
 
-- (NSMutableSet *)userSet
-{
-    if (_userSet == nil) {
-        _userSet = [[NSMutableSet alloc] init];
-    }
-    return _userSet;
-}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -122,14 +116,15 @@
         hud.labelText = @"Updating list";
     }
     
-    //    //get list of followers
-    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
-        _totalFollowings = totalFollowingCount; //set the count to know how much we should send
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-        [self reloadView];
-    } failureBlock:^{
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-    }];
+        //get list of followings
+        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
+            //refresh the view
+            _totalFollowings = totalFollowingCount;
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+            [self reloadView];
+        } failureBlock:^{
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        }];
 }
 
 - (void)loadMoreData
@@ -153,16 +148,16 @@
         NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
         [request setFetchLimit:fetchLimit];
         //set sort descriptor
-        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
         [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
         self.searchResults = [User MR_executeFetchRequest:request];
-        [self.tableView reloadData];
     } else {
         NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
         self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
     }
+    [self reloadTableView];
 }
 
 - (void)reloadView
@@ -172,6 +167,22 @@
     }
     else {
         [self filterContentForSearchText:@""];
+    }
+}
+
+- (void)reloadTableView
+{
+    if ([_searchBar.text length] > 0) {
+        //reload searchresultstableview tu update cell
+        for (UITableView *tView in self.view.subviews) {
+            if ([[tView class] isSubclassOfClass:[UITableView class]]) {
+                [tView reloadData];
+                break;
+            }
+        }
+    }
+    else {
+        [self.tableView reloadData];
     }
 }
 
@@ -212,11 +223,23 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    
     int result = [self.searchResults count];
     
     if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings ) {
-        if (result > 0 && [_searchBar.text length] == 0)
-            result ++;
+        if (result > 0)
+        {
+            if ([_searchBar.text length] == 0) {
+                result ++;
+            }
+            else
+            {
+                if (_searchActive) {
+                    //search active, we show loading indicator at bottom
+                    result++;
+                }
+            }
+        }
     }
     
     return result;
@@ -259,12 +282,21 @@
     }
     else {
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        UIActivityIndicatorViewStyle activityViewStyle = UIActivityIndicatorViewStyleWhite;
+        
+        if ([_searchBar.text length] > 0) {
+            activityViewStyle = UIActivityIndicatorViewStyleGray;
+        }
+        
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:activityViewStyle];
         activityView.center = cell.center;
         [cell addSubview:activityView];
         [activityView startAnimating];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [self loadMoreData];
+        
+        if (!_searchActive) {
+            [self loadMoreData];
+        }
         
         return cell;
     }
@@ -297,11 +329,29 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - UISearchBar delegate methods
+#pragma mark - UISearchDisplayController delegate methods
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
-    [self filterContentForSearchText:searchText];
+    _searchActive = YES;
+    //filter users in local DB
+    [self filterContentForSearchText:searchString];
+    
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+    
+    if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings ) { //if all users are already downloaded we do not need additional call to webservice
+        
+        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier withSearchString:searchString withCompletionBlock:^{
+            _searchActive = NO;
+            //in case later request will finish first, use _searchBar.text
+            [self filterContentForSearchText:_searchBar.text];
+        } failureBlock:^{
+            _searchActive = NO;
+        }];
+    }
+    
+    return YES;
 }
 
 - (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
@@ -314,5 +364,6 @@
     [self filterContentForSearchText:[self.searchDisplayController.searchBar text]];
     return YES;
 }
+
 
 @end
