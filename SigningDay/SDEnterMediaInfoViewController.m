@@ -259,12 +259,11 @@
 - (void)addTagsViewController:(SDAddTagsViewController *)addTagsViewController
          didFinishPickingTags:(NSArray *)tagUsersArray
 {
-    NSLog(@"Tags: %d", [tagUsersArray count]);
     self.tagUsersArray = tagUsersArray;
     
     NSMutableArray *namesArray = [[NSMutableArray alloc] init];
     for (User *user in tagUsersArray) {
-        [namesArray addObject:user.name];
+        [namesArray addObject:user.username];
     }
     self.tagsArray = namesArray;
     

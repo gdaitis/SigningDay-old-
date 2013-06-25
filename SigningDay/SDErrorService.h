@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+@class AFHTTPRequestOperation;
+
 @interface SDErrorService : NSObject
 
-+ (void)handleError:(NSError *)error;
++ (void)handleError:(NSError *)error withOperation:(AFHTTPRequestOperation *)operation;
 + (void)handleFacebookError;
 
 @end

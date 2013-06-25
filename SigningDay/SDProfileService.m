@@ -103,28 +103,28 @@
                                                                                                                                                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                                                                                                                                                     if (failureBlock)
                                                                                                                                                                         failureBlock();
-                                                                                                                                                                    [SDErrorService handleError:error];
+                                                                                                                                                                    [SDErrorService handleError:error withOperation:operation];
                                                                                                                                                                 }];
                                                                                                                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                                                                                                                     if (failureBlock)
                                                                                                                                         failureBlock();
-                                                                                                                                    [SDErrorService handleError:error];
+                                                                                                                                    [SDErrorService handleError:error withOperation:operation];
                                                                                                                                 }];
                                                                                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                                                                                     if (failureBlock)
                                                                                                         failureBlock();
-                                                                                                    [SDErrorService handleError:error];
+                                                                                                    [SDErrorService handleError:error withOperation:operation];
                                                                                                 }];
                                                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                                                     if (failureBlock)
                                                                         failureBlock();
-                                                                    [SDErrorService handleError:error];
+                                                                    [SDErrorService handleError:error withOperation:operation];
                                                                 }];
                                     
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if (failureBlock)
             failureBlock();
-        [SDErrorService handleError:error];
+        [SDErrorService handleError:error withOperation:operation];
     }];
 }
 
@@ -169,7 +169,7 @@
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if (failureBlock)
             failureBlock();
-        [SDErrorService handleError:error];
+        [SDErrorService handleError:error withOperation:operation];
     }];
 }
 
@@ -210,7 +210,7 @@
                                 completionBlock:completionBlock];
         } else {
             [MBProgressHUD hideAllHUDsForView:appDelegate.window animated:YES];
-            [SDErrorService handleError:error];
+            [SDErrorService handleError:error withOperation:operation];
         }
     }];
     [operation start];
@@ -291,7 +291,7 @@
                                       }];
                         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                             [MBProgressHUD hideAllHUDsForView:appDelegate.window animated:YES];
-                            [SDErrorService handleError:error];
+                            [SDErrorService handleError:error withOperation:operation];
                         }];
             }
         }
@@ -324,7 +324,7 @@
         NSLog(@"Avatar deleted successfully");
         [MBProgressHUD hideAllHUDsForView:appDelegate.window animated:YES];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        [SDErrorService handleError:error];
+        [SDErrorService handleError:error withOperation:operation];
         [MBProgressHUD hideAllHUDsForView:appDelegate.window animated:YES];
     }];
     [operation start];

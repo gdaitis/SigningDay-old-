@@ -63,7 +63,7 @@
                                     if (completionBlock)
                                         completionBlock(totalUserCount);
                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                    [SDErrorService handleError:error];
+                                    [SDErrorService handleError:error withOperation:operation];
                                     if (failureBlock)
                                         failureBlock();
                                 }];
@@ -106,7 +106,7 @@
                                     if (completionBlock)
                                         completionBlock(totalUserCount);
                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                    [SDErrorService handleError:error];
+                                    [SDErrorService handleError:error withOperation:operation];
                                     if (failureBlock)
                                         failureBlock();
                                 }];
@@ -130,7 +130,7 @@
                      if (completionBlock)
                          completionBlock();
                  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                     [SDErrorService handleError:error];
+                     [SDErrorService handleError:error withOperation:operation];
                      if (failureBlock)
                          failureBlock();
                  }];
@@ -150,7 +150,7 @@
                                     if (completionBlock)
                                         completionBlock();
                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                    [SDErrorService handleError:error];
+                                    [SDErrorService handleError:error withOperation:operation];
                                     if (failureBlock)
                                         failureBlock();
                                 }];
@@ -193,7 +193,7 @@
                                     if (completionBlock)
                                         completionBlock();
                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                    [SDErrorService handleError:error];
+                                    [SDErrorService handleError:error withOperation:operation];
                                     if (failureBlock)
                                         failureBlock();
                                 }];
@@ -217,7 +217,7 @@
                                     for (NSDictionary *userInfo in results) {
 
                                         NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"UserId"];
-                                        User *user = [User MR_findFirstByAttribute:@"identifier" withValue:followingsUserIdentifier];
+                                        User *user = [User MR_findFirstByAttribute:@"iderarantifier" withValue:followingsUserIdentifier];
                                         
                                         if (!user) {
                                             user = [User MR_createInContext:context];
@@ -244,7 +244,7 @@
                                     if (completionBlock)
                                         completionBlock();
                                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                    [SDErrorService handleError:error];
+                                    [SDErrorService handleError:error withOperation:operation];
                                     if (failureBlock)
                                         failureBlock();
                                 }];

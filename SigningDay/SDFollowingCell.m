@@ -41,6 +41,7 @@
 
 - (void)setUserImageUrlString:(NSString *)userImageUrlString
 {
+    self.userImageView.image = [UIImage imageNamed:@"placeholder.png"];
     [[SDImageService sharedService] getImageWithURLString:userImageUrlString success:^(UIImage *image) {
         self.userImageView.image = [image imageByScalingAndCroppingForSize:CGSizeMake(48 * [UIScreen mainScreen].scale, 48 * [UIScreen mainScreen].scale)];
     }];

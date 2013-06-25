@@ -16,7 +16,7 @@
 #import "SDLoginService.h"
 #import "SDProfileService.h"
 #import "SDUtils.h"
-
+#import "AFNetworking.h"
 #import "Master.h"
 
 @interface SDFollowingViewController ()
@@ -288,6 +288,8 @@
                 }
             }
             [cell.followButton addTarget:self action:@selector(followButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        } else {
+            [cell.userImageView cancelImageRequestOperation];
         }
         
         cell.followButton.tag = indexPath.row;
@@ -295,7 +297,8 @@
         
         User *user = [self.searchResults objectAtIndex:indexPath.row];
         cell.usernameTitle.text = user.name;
-        cell.userImageUrlString = user.avatarUrl;
+        //cell.userImageUrlString = user.avatarUrl;
+        [cell.userImageView setImageWithURL:[NSURL URLWithString:user.avatarUrl]];
         
         //check for following
         NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];

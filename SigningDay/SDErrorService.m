@@ -8,16 +8,19 @@
 
 #import "SDErrorService.h"
 #import "MBProgressHUD.h"
+#import "AFHTTPRequestOperation.h"
 
 @implementation SDErrorService
 
-+ (void)handleError:(NSError *)error
++ (void)handleError:(NSError *)error withOperation:(AFHTTPRequestOperation *)operation
 {
-    NSLog(@"Handling an error: %@", error);
+    NSLog(@"Request: %@", [[operation request] URL]);
+    NSLog(@"Request headers: %@", [[operation request] allHTTPHeaderFields]);
+    NSLog(@"Request body: %@", [[NSString alloc] initWithData:[[operation request] HTTPBody] encoding:NSUTF8StringEncoding]);
     
     if (error.code == -1011) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                        message:@"Ivalid username or password"
+                                                        message:@"Invalid username or password"
                                                        delegate:nil
                                               cancelButtonTitle:@"Ok"
                                               otherButtonTitles:nil];

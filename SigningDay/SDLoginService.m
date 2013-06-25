@@ -95,14 +95,12 @@ NSString * const kSDLoginServiceUserDidLogoutNotification = @"SDLoginServiceUser
                                  failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                                      [MBProgressHUD hideAllHUDsForView:appDelegate.window animated:YES];
                                      
-                                     [SDErrorService handleError:error];
+                                     [SDErrorService handleError:error withOperation:operation];
                                  }];
 }
 
 + (void)logout
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSDLoginServiceUserDidLogoutNotification object:nil];
-    
     SDAppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     [appDelegate.fbSession close];
     appDelegate.twitterAccount = nil;
@@ -118,6 +116,8 @@ NSString * const kSDLoginServiceUserDidLogoutNotification = @"SDLoginServiceUser
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSDLoginServiceUserDidLogoutNotification object:nil];
 }
 
 @end
