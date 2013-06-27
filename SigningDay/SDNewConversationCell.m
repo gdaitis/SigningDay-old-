@@ -9,6 +9,7 @@
 #import "SDNewConversationCell.h"
 #import "SDImageService.h"
 #import "UIImage+Crop.h"
+#import "AFNetworking.h"
 
 @interface SDNewConversationCell ()
 
@@ -40,13 +41,6 @@
     if (selected) {
         self.backgroundView.backgroundColor = [UIColor colorWithRed:207.0f/255.0f green:181.0f/255.0f blue:21.0f/255.0f alpha:1];
     }
-}
-
-- (void)setUserImageUrlString:(NSString *)userImageUrlString
-{
-    [[SDImageService sharedService] getImageWithURLString:userImageUrlString success:^(UIImage *image) {
-        self.userImageView.image = [image imageByScalingAndCroppingForSize:CGSizeMake(48 * [UIScreen mainScreen].scale, 48 * [UIScreen mainScreen].scale)];
-    }];
 }
 
 @end

@@ -19,6 +19,7 @@
 #import "PSYBlockTimer.h"
 #import "UIImage+Crop.h"
 #import "SDTabBarController.h"
+#import "AFNetworking.h"
 
 #define VIEW_WIDTH    self.containerView.frame.size.width
 #define VIEW_HEIGHT    self.containerView.frame.size.height
@@ -411,9 +412,9 @@ static CGFloat const kChatBarHeight4    = 104.0f;
         cell = [[SDMessageCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
+    } else {
+        [cell.userImageView cancelImageRequestOperation];
     }
-    
-    cell.userImageView.image = nil;
     
     Message *message = [self.messages objectAtIndex:indexPath.row];
     cell.message = message;
@@ -441,7 +442,19 @@ static CGFloat const kChatBarHeight4    = 104.0f;
         cell.backgroundView.backgroundColor = [UIColor whiteColor];
     }
     
-    cell.userImageUrlString = message.user.avatarUrl;
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:message.user.avatarUrl]];
+    [cell.userImageView setImageWithURLRequest:request
+                              placeholderImage:nil
+                                       success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                               UIImage *anImage = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   cell.userImageView.image = anImage;
+                                               });
+                                           });
+                                       } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                           //
+                                       }];
     
     [cell setNeedsLayout];
     

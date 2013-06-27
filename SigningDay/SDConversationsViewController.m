@@ -232,9 +232,9 @@
         cell = [[SDConversationCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIdentifier];
+    } else {
+        [cell.userImageView cancelImageRequestOperation];
     }
-    
-    cell.userImageView.image = nil;
     
     Conversation *conversation = [self.conversations objectAtIndex:indexPath.row];
     
@@ -271,7 +271,19 @@
     else
         conversationUser = conversation.author;
     
-    cell.userImageUrlString = conversationUser.avatarUrl;
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:conversationUser.avatarUrl]];
+    [cell.userImageView setImageWithURLRequest:request
+                              placeholderImage:nil
+                                       success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                               UIImage *anImage = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   cell.userImageView.image = anImage;
+                                               });
+                                           });
+                                       } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                           //
+                                       }];
     
     BOOL isRead = [conversation.isRead boolValue];
     if (!isRead)

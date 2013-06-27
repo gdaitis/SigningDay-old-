@@ -18,6 +18,7 @@
 #import "UIImage+Crop.h"
 #import "SDFollowingService.h"
 #import "SDFollowingViewController.h"
+#import "AFNetworking.h"
 
 @interface SDProfileViewController () <SDSettingsViewControllerDelegate>
 
@@ -123,6 +124,19 @@
                 self.avatarImageView.image = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
             }
         }];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:user.avatarUrl]];
+        [self.avatarImageView setImageWithURLRequest:request
+                                    placeholderImage:nil
+                                             success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                                     UIImage *anImage = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
+                                                     dispatch_async(dispatch_get_main_queue(), ^{
+                                                         self.avatarImageView.image = anImage;
+                                                     });
+                                                 });
+                                             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                                 //
+                                             }];
     }
 }
 

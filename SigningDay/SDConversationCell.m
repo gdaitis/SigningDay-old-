@@ -58,13 +58,6 @@
     }
 }
 
-- (void)setUserImageUrlString:(NSString *)userImageUrlString
-{
-    [[SDImageService sharedService] getImageWithURLString:userImageUrlString success:^(UIImage *image) {
-        self.userImageView.image = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
-    }];
-}
-
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
