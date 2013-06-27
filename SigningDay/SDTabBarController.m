@@ -124,7 +124,7 @@ NSString * const kSDTabBarShouldShowNotification = @"SDTabBarShouldShowNotificat
                 self.imagePicker.videoQuality = UIImagePickerControllerQualityTypeLow;
             }
             
-            SDCameraOverlayView *cameraOverlayView = [[SDCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+            SDCameraOverlayView *cameraOverlayView = [[SDCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 320, self.view.bounds.size.height)];
             cameraOverlayView.delegate = self;
             self.imagePicker.cameraOverlayView = cameraOverlayView;
         } else if (buttonIndex == 1) {
@@ -156,7 +156,7 @@ NSString * const kSDTabBarShouldShowNotification = @"SDTabBarShouldShowNotificat
             
             [self dismissModalViewControllerAnimated:YES];
         } else if (buttonIndex == 2 && !self.isFromLibrary) {
-            SDCameraOverlayView *cameraOverlayView = [[SDCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+            SDCameraOverlayView *cameraOverlayView = [[SDCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 320, self.view.bounds.size.height)];
             cameraOverlayView.delegate = self;
             self.imagePicker.cameraOverlayView = cameraOverlayView;
         }

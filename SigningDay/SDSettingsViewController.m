@@ -183,7 +183,7 @@
             self.imagePicker.cameraViewTransform = CGAffineTransformMakeScale(1.23, 1.23);
             self.imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeAuto;
             self.imagePicker.showsCameraControls = NO;
-            SDSimplifiedCameraOverlayView *cameraOverlayView = [[SDSimplifiedCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+            SDSimplifiedCameraOverlayView *cameraOverlayView = [[SDSimplifiedCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 320, self.view.bounds.size.height)];
             cameraOverlayView.delegate = self;
             self.imagePicker.cameraOverlayView = cameraOverlayView;
         } else if (buttonIndex == 1) {
