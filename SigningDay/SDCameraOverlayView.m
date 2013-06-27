@@ -30,7 +30,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.bottomBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 420, 320, 60)];
+        self.bottomBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.bounds.size.height-60, 320, 60)];
         self.bottomBackgroundImageView.image = [UIImage imageNamed:@"camera_bottom_bg.png"];
         self.bottomBackgroundImageView.userInteractionEnabled = YES;
         [self addSubview:self.bottomBackgroundImageView];
