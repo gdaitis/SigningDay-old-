@@ -108,8 +108,41 @@
     else {
         self.title = @"FOLLOWING";
     }
+
+    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        [self downloadAllFollowingAndShowActivityIndicator:YES];
+    }
+    else {
+        [self updateInfoAndShowActivityIndicator:YES];
+    }
+}
+
+- (void)downloadAllFollowingAndShowActivityIndicator:(BOOL)showActivity
+{
+    //first dowload all following and only then call [self updateInfoAndShowActivityIndicator:YES];
     
-    [self updateInfoAndShowActivityIndicator:YES];
+    if (showActivity) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+        hud.labelText = @"Updating list";
+    }
+    
+    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
+    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
+    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
+        //refresh the view
+        _totalFollowings = totalFollowingCount;
+        if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings)
+        {
+            _currentFollowingPage++;
+            [self downloadAllFollowingAndShowActivityIndicator:NO];
+        }
+        else {
+            [self updateInfoAndShowActivityIndicator:YES];
+            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+        }
+    } failureBlock:^{
+        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
+    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
