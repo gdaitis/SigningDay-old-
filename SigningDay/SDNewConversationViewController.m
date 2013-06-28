@@ -266,7 +266,8 @@
                                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                                    UIImage *anImage = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                       cell.userImageView.image = anImage;
+                                                       SDNewConversationCell *myCell = (SDNewConversationCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+                                                       myCell.userImageView.image = anImage;
                                                    });
                                                });
                                            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
