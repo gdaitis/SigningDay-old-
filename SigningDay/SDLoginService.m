@@ -22,7 +22,7 @@ NSString * const kSDLoginServiceUserDidLogoutNotification = @"SDLoginServiceUser
 {
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     if (username)
-        [parameters setValue:username forKey:@"Username"];
+        [parameters setValue:[username lowercaseString] forKey:@"Username"];
     if (password)
         [parameters setValue:password forKey:@"Password"];
     if (facebookToken)

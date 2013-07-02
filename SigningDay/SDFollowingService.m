@@ -266,7 +266,7 @@
             
             if ([user.conversations count] == 0) {
                 //user doesn't have mutual conversation, and is not being followed or following master user, so it is going to be deleted
-                if (![user.username isEqualToString:username]) {
+                if (![[user.username lowercaseString] isEqualToString:[username lowercaseString]]) {
                     //not master user can delete
                     [context deleteObject:user];
                 }

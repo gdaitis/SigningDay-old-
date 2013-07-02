@@ -243,6 +243,7 @@
         [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
         self.searchResults = [User MR_executeFetchRequest:request];
     } else {
+#warning also need localizedcaseinsensitive sort descriptor
         NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];

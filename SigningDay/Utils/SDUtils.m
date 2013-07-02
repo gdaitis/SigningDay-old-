@@ -9,6 +9,7 @@
 #import "SDUtils.h"
 #import "Master.h"
 #import "SDFollowingService.h"
+#import "SDLoginService.h"
 
 @interface SDUtils()
 
@@ -35,6 +36,7 @@
         [[NSFileManager defaultManager] removeItemAtPath:[NSPersistentStore MR_defaultLocalStoreUrl].path
                                                    error:&error];
         [[NSUserDefaults standardUserDefaults] setObject:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] forKey:@"buildVersion"];
+        [SDLoginService logout];
     }
     [MagicalRecord setupCoreDataStack];
 }
