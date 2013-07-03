@@ -97,6 +97,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -295,11 +297,6 @@
         cell.backgroundView.backgroundColor = [UIColor whiteColor];
     
     return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - SDNavigationController delegate methods

@@ -40,8 +40,8 @@
     self.messageTextLabel.textColor = [UIColor colorWithRed:85.0f/255.0f green:85.0f/255.0f blue:85.0f/255.0f alpha:1];
     self.bottomLineView.backgroundColor = [UIColor colorWithRed:196.0f/255.0f green:196.0f/255.0f blue:196.0f/255.0f alpha:1];
     
-    self.highlightedImageView = [[UIImageView alloc] init];
-    self.highlightedImageView.image = [UIImage imageNamed:@"highlight_yellow.png"];
+    self.highlightedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"highlight_yellow.png"]];
+    self.selectedBackgroundView = self.highlightedImageView;
 }
 
 - (void)layoutSubviews
@@ -61,13 +61,6 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-    if (selected) {
-        [self.backgroundView addSubview:self.highlightedImageView];
-    } else {
-        [self.highlightedImageView removeFromSuperview];
-    }
 }
 
 @end
