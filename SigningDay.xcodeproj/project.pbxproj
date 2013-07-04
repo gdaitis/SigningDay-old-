@@ -82,10 +82,6 @@
 		7B50178A15EF65E4006F7A63 /* SDAddTagsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50178915EF65E4006F7A63 /* SDAddTagsCell.m */; };
 		7B50178F15EF7F73006F7A63 /* SDNewConversationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B50178E15EF7F73006F7A63 /* SDNewConversationCell.xib */; };
 		7B50179115EF82A6006F7A63 /* SDAddTagsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B50179015EF82A6006F7A63 /* SDAddTagsCell.xib */; };
-		7B50179715EF9411006F7A63 /* ImageData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179615EF9411006F7A63 /* ImageData.m */; };
-		7B50179A15EF9411006F7A63 /* Master.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179915EF9411006F7A63 /* Master.m */; };
-		7B50179D15EF9411006F7A63 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179C15EF9411006F7A63 /* Message.m */; };
-		7B5017A015EF9411006F7A63 /* Conversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B50179F15EF9411006F7A63 /* Conversation.m */; };
 		7B542F7B15C92CD400666EAF /* chat_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B542F7915C92CD300666EAF /* chat_bg@2x.png */; };
 		7B542F8A15C9571C00666EAF /* conversations_tab_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B542F7E15C9571B00666EAF /* conversations_tab_active@2x.png */; };
 		7B542F8C15C9571C00666EAF /* conversations_tab_inactive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B542F8015C9571B00666EAF /* conversations_tab_inactive@2x.png */; };
@@ -219,9 +215,13 @@
 		802C5A8C1742470E0034E729 /* FollowingUnselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A881742470E0034E729 /* FollowingUnselected.png */; };
 		802C5A8D1742470E0034E729 /* FollowingUnselected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 802C5A891742470E0034E729 /* FollowingUnselected@2x.png */; };
 		8036F6FE174B92A80054A4E5 /* SDUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8036F6FD174B92A80054A4E5 /* SDUtils.m */; };
-		8036F70D174BA2430054A4E5 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8036F70C174BA2430054A4E5 /* User.m */; };
 		8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071D68F174115B7004CD007 /* SDFollowingViewController.m */; };
 		807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EDD5317411B6F006D973D /* SDFollowingCell.m */; };
+		80C409AB17831E1B0075ED8F /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C409AA17831E1B0075ED8F /* User.m */; };
+		80C409AE17831E1C0075ED8F /* ImageData.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C409AD17831E1C0075ED8F /* ImageData.m */; };
+		80C409B117831E1C0075ED8F /* Master.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C409B017831E1C0075ED8F /* Master.m */; };
+		80C409B417831E1C0075ED8F /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C409B317831E1C0075ED8F /* Message.m */; };
+		80C409B717831E1C0075ED8F /* Conversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C409B617831E1C0075ED8F /* Conversation.m */; };
 		80E31C07175E3E150013545C /* conversations_bg-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 80E31C06175E3E150013545C /* conversations_bg-568h@2x.png */; };
 		F1E60ABE16E79B850046FF7C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E60ABD16E79B850046FF7C /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -318,14 +318,6 @@
 		7B50178915EF65E4006F7A63 /* SDAddTagsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDAddTagsCell.m; sourceTree = "<group>"; };
 		7B50178E15EF7F73006F7A63 /* SDNewConversationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SDNewConversationCell.xib; sourceTree = "<group>"; };
 		7B50179015EF82A6006F7A63 /* SDAddTagsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SDAddTagsCell.xib; sourceTree = "<group>"; };
-		7B50179515EF9411006F7A63 /* ImageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageData.h; sourceTree = "<group>"; };
-		7B50179615EF9411006F7A63 /* ImageData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageData.m; sourceTree = "<group>"; };
-		7B50179815EF9411006F7A63 /* Master.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Master.h; sourceTree = "<group>"; };
-		7B50179915EF9411006F7A63 /* Master.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Master.m; sourceTree = "<group>"; };
-		7B50179B15EF9411006F7A63 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
-		7B50179C15EF9411006F7A63 /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
-		7B50179E15EF9411006F7A63 /* Conversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversation.h; sourceTree = "<group>"; };
-		7B50179F15EF9411006F7A63 /* Conversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversation.m; sourceTree = "<group>"; };
 		7B542F7915C92CD300666EAF /* chat_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_bg@2x.png"; sourceTree = "<group>"; };
 		7B542F7E15C9571B00666EAF /* conversations_tab_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "conversations_tab_active@2x.png"; sourceTree = "<group>"; };
 		7B542F8015C9571B00666EAF /* conversations_tab_inactive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "conversations_tab_inactive@2x.png"; sourceTree = "<group>"; };
@@ -536,12 +528,20 @@
 		8036F6EE174B5CA60054A4E5 /* SigningDay 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SigningDay 2.xcdatamodel"; sourceTree = "<group>"; };
 		8036F6FC174B92A80054A4E5 /* SDUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDUtils.h; sourceTree = "<group>"; };
 		8036F6FD174B92A80054A4E5 /* SDUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDUtils.m; sourceTree = "<group>"; };
-		8036F70B174BA2430054A4E5 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		8036F70C174BA2430054A4E5 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		8071D68E174115B6004CD007 /* SDFollowingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingViewController.h; sourceTree = "<group>"; };
 		8071D68F174115B7004CD007 /* SDFollowingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingViewController.m; sourceTree = "<group>"; };
 		807EDD5217411B6F006D973D /* SDFollowingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDFollowingCell.h; sourceTree = "<group>"; };
 		807EDD5317411B6F006D973D /* SDFollowingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDFollowingCell.m; sourceTree = "<group>"; };
+		80C409A917831E1B0075ED8F /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		80C409AA17831E1B0075ED8F /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		80C409AC17831E1C0075ED8F /* ImageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageData.h; sourceTree = "<group>"; };
+		80C409AD17831E1C0075ED8F /* ImageData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageData.m; sourceTree = "<group>"; };
+		80C409AF17831E1C0075ED8F /* Master.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Master.h; sourceTree = "<group>"; };
+		80C409B017831E1C0075ED8F /* Master.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Master.m; sourceTree = "<group>"; };
+		80C409B217831E1C0075ED8F /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
+		80C409B317831E1C0075ED8F /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
+		80C409B517831E1C0075ED8F /* Conversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversation.h; sourceTree = "<group>"; };
+		80C409B617831E1C0075ED8F /* Conversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversation.m; sourceTree = "<group>"; };
 		80E31C06175E3E150013545C /* conversations_bg-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "conversations_bg-568h@2x.png"; sourceTree = "<group>"; };
 		F1E60ABD16E79B850046FF7C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -898,17 +898,17 @@
 		7B5748A415B94D8F00D542C4 /* Data Models */ = {
 			isa = PBXGroup;
 			children = (
-				7B50179E15EF9411006F7A63 /* Conversation.h */,
-				7B50179F15EF9411006F7A63 /* Conversation.m */,
-				7B50179B15EF9411006F7A63 /* Message.h */,
-				7B50179C15EF9411006F7A63 /* Message.m */,
-				7B50179815EF9411006F7A63 /* Master.h */,
-				7B50179915EF9411006F7A63 /* Master.m */,
-				7B50179515EF9411006F7A63 /* ImageData.h */,
-				7B50179615EF9411006F7A63 /* ImageData.m */,
-				8036F70B174BA2430054A4E5 /* User.h */,
-				8036F70C174BA2430054A4E5 /* User.m */,
 				7B5748A515B94DAB00D542C4 /* SigningDay.xcdatamodeld */,
+				80C409A917831E1B0075ED8F /* User.h */,
+				80C409AA17831E1B0075ED8F /* User.m */,
+				80C409AC17831E1C0075ED8F /* ImageData.h */,
+				80C409AD17831E1C0075ED8F /* ImageData.m */,
+				80C409AF17831E1C0075ED8F /* Master.h */,
+				80C409B017831E1C0075ED8F /* Master.m */,
+				80C409B217831E1C0075ED8F /* Message.h */,
+				80C409B317831E1C0075ED8F /* Message.m */,
+				80C409B517831E1C0075ED8F /* Conversation.h */,
+				80C409B617831E1C0075ED8F /* Conversation.m */,
 			);
 			name = "Data Models";
 			sourceTree = "<group>";
@@ -1380,15 +1380,15 @@
 				7BD1D2FF15EE3DAF00434A3D /* SDCommonWebViewController.m in Sources */,
 				7B50178315EF619F006F7A63 /* SDAddTagsViewController.m in Sources */,
 				7B50178A15EF65E4006F7A63 /* SDAddTagsCell.m in Sources */,
-				7B50179715EF9411006F7A63 /* ImageData.m in Sources */,
-				7B50179A15EF9411006F7A63 /* Master.m in Sources */,
-				7B50179D15EF9411006F7A63 /* Message.m in Sources */,
-				7B5017A015EF9411006F7A63 /* Conversation.m in Sources */,
 				8071D690174115B7004CD007 /* SDFollowingViewController.m in Sources */,
 				807EDD5417411B6F006D973D /* SDFollowingCell.m in Sources */,
 				802C5A8517422C810034E729 /* SDFollowingService.m in Sources */,
 				8036F6FE174B92A80054A4E5 /* SDUtils.m in Sources */,
-				8036F70D174BA2430054A4E5 /* User.m in Sources */,
+				80C409AB17831E1B0075ED8F /* User.m in Sources */,
+				80C409AE17831E1C0075ED8F /* ImageData.m in Sources */,
+				80C409B117831E1C0075ED8F /* Master.m in Sources */,
+				80C409B417831E1C0075ED8F /* Message.m in Sources */,
+				80C409B717831E1C0075ED8F /* Conversation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

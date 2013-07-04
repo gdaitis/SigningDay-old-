@@ -31,8 +31,10 @@
 
 @property (strong, nonatomic) NSArray *conversations;
 @property BOOL firstLoad;
+@property BOOL viewVisible;
 @property (nonatomic, assign) int totalMessages;
 @property (nonatomic, assign) int currentMessagesPage;
+
 
 
 - (void)reload;
@@ -99,10 +101,18 @@
     [super viewDidAppear:animated];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    _viewVisible = NO;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
     [SDFollowingService removeFollowing:YES andFollowed:YES];
+    
+    _viewVisible = YES;
     
     _currentMessagesPage = _totalMessages = 0;
     if (self.firstLoad) {
@@ -115,8 +125,10 @@
 
 - (void)loadMoreData
 {
-    _currentMessagesPage++;
-    [self checkServer];
+    if (_viewVisible) {
+        _currentMessagesPage++;
+        [self checkServer];
+    }
 }
 
 - (void)checkServer

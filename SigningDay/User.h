@@ -2,7 +2,7 @@
 //  User.h
 //  SigningDay
 //
-//  Created by Lukas Kekys on 5/21/13.
+//  Created by Lukas Kekys on 7/2/13.
 //
 //
 
@@ -22,6 +22,8 @@
 @property (nonatomic, retain) NSNumber * numberOfPhotos;
 @property (nonatomic, retain) NSNumber * numberOfVideos;
 @property (nonatomic, retain) NSString * username;
+@property (nonatomic, retain) NSDate * followingRelationshipCreated;
+@property (nonatomic, retain) NSDate * followerRelationshipCreated;
 @property (nonatomic, retain) NSSet *authorOf;
 @property (nonatomic, retain) NSSet *conversations;
 @property (nonatomic, retain) Master *followedBy;
