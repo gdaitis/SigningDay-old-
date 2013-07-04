@@ -181,42 +181,6 @@
                                  }];
 }
 
-+ (void)getListOfFollowersForUserWithIdentifier:(NSNumber *)identifier withCompletionBlock:(void (^)(void))completionBlock
-{
-    NSString *path = [NSString stringWithFormat:@"users/%d/followers.json", [identifier integerValue]];
-    [[SDAPIClient sharedClient] getPath:path
-                             parameters:[NSDictionary dictionaryWithObjectsAndKeys:@"100", @"PageSize", nil]
-                                success:^(AFHTTPRequestOperation *operation, id JSON) {
-                                    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
-                                    NSString *masterUsername = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
-                                    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:masterUsername inContext:context];
-                                    
-                                    master.followedBy = nil;
-                                    
-                                    NSArray *followers = [JSON objectForKey:@"Followers"];
-                                    for (NSDictionary *userInfo in followers) {
-                                        NSNumber *followersUserIdentifier = [userInfo valueForKey:@"Id"];
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followersUserIdentifier];
-                                        User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
-                                        if (!user) {
-                                            user = [User MR_createInContext:context];
-                                            user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
-                                            user.username = [userInfo valueForKey:@"Username"];
-                                            user.master = master;
-                                        }
-                                        user.following = master;
-                                        user.avatarUrl = [userInfo valueForKey:@"AvatarUrl"];
-                                        user.name = [userInfo valueForKey:@"DisplayName"];
-                                    }
-                                    [context MR_save];
-                                    
-                                    if (completionBlock)
-                                        completionBlock();
-                                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                    [SDErrorService handleError:error withOperation:operation];
-                                }];
-}
-
 + (void)startNewConversationWithUsername:(NSString *)username text:(NSString *)text completionBlock:(void (^)(NSString *identifier))completionBlock
 {
     NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:@"No Subject", @"Subject", text, @"Body", username, @"Usernames", nil];

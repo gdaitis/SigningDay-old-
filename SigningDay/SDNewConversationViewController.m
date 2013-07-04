@@ -133,7 +133,7 @@
     }
     
     //get list of followers
-    [SDFollowingService getListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
+    [SDFollowingService getAlphabeticallySortedListOfFollowersForUserWithIdentifier:master.identifier forPage:_currentFollowersPage withCompletionBlock:^(int totalFollowerCount) {
         _totalFollowers = totalFollowerCount; //set the count to know how much we should send
         [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
         [self reloadView];
@@ -233,6 +233,12 @@
                     //search active, we show loading indicator at bottom
                     result++;
                 }
+            }
+        }
+        else {
+            if (_searchActive) {
+                //search active, we show loading indicator at bottom
+                result++;
             }
         }
     }

@@ -117,7 +117,7 @@
     }
     
         //get list of followings
-        [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
+        [SDFollowingService getAlphabeticallySortedListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
             //refresh the view
             _totalFollowings = totalFollowingCount;
             [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
@@ -238,6 +238,12 @@
                     //search active, we show loading indicator at bottom
                     result++;
                 }
+            }
+        }
+        else {
+            if (_searchActive) {
+                //search active, we show loading indicator at bottom
+                result++;
             }
         }
     }
