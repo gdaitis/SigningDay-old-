@@ -22,6 +22,7 @@
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
+#import "UIImage+Crop.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import "UIImageView+AFNetworking.h"
@@ -113,16 +114,20 @@ static char kAFImageRequestOperationObjectKey;
         
         AFImageRequestOperation *requestOperation = [[[AFImageRequestOperation alloc] initWithRequest:urlRequest] autorelease];
         [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            // EDITED by Vytautas Gudaitis
+            UIImage *anImage = [responseObject imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
+            
             if ([[urlRequest URL] isEqual:[[self.af_imageRequestOperation request] URL]]) {
-                self.image = responseObject;
+                self.image = /*responseObject*/anImage;
                 self.af_imageRequestOperation = nil;
             }
 
             if (success) {
-                success(operation.request, operation.response, responseObject);
+                success(operation.request, operation.response, /*responseObject*/anImage);
             }
 
-            [[[self class] af_sharedImageCache] cacheImage:responseObject forRequest:urlRequest];
+            [[[self class] af_sharedImageCache] cacheImage:/*responseObject*/anImage forRequest:urlRequest];
             
 
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {

@@ -291,13 +291,10 @@
     [cell.userImageView setImageWithURLRequest:request
                               placeholderImage:nil
                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                                           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                               UIImage *anImage = [image imageByScalingAndCroppingForSize:CGSizeMake(50 * [UIScreen mainScreen].scale, 50 * [UIScreen mainScreen].scale)];
-                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                   SDConversationCell *myCell = (SDConversationCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-                                                   myCell.userImageView.image = anImage;
-                                               });
-                                           });
+                                           
+                                          SDConversationCell *myCell = (SDConversationCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+                                          myCell.userImageView.image = image;
+                                           
                                        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
                                            //
                                        }];
