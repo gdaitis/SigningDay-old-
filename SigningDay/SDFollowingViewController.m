@@ -109,40 +109,7 @@
         self.title = @"FOLLOWING";
     }
 
-    if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
-        [self downloadAllFollowingAndShowActivityIndicator:YES];
-    }
-    else {
-        [self updateInfoAndShowActivityIndicator:YES];
-    }
-}
-
-- (void)downloadAllFollowingAndShowActivityIndicator:(BOOL)showActivity
-{
-    //first dowload all following and only then call [self updateInfoAndShowActivityIndicator:YES];
-    
-    if (showActivity) {
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-        hud.labelText = @"Updating list";
-    }
-    
-    NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
-    Master *master = [Master MR_findFirstByAttribute:@"username" withValue:username];
-    [SDFollowingService getListOfFollowingsForUserWithIdentifier:master.identifier forPage:_currentFollowingPage withCompletionBlock:^(int totalFollowingCount) {
-        //refresh the view
-        _totalFollowings = totalFollowingCount;
-        if ((_currentFollowingPage+1)*kMaxItemsPerPage < _totalFollowings)
-        {
-            _currentFollowingPage++;
-            [self downloadAllFollowingAndShowActivityIndicator:NO];
-        }
-        else {
-            [self updateInfoAndShowActivityIndicator:YES];
-            [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-        }
-    } failureBlock:^{
-        [MBProgressHUD hideAllHUDsForView:self.navigationController.view animated:YES];
-    }];
+    [self updateInfoAndShowActivityIndicator:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -222,6 +189,7 @@
     if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
         masterUsernamePredicate = [NSPredicate predicateWithFormat:@"following.username like %@", username];
         fetchLimit = (_currentFollowersPage +1) *kMaxItemsPerPage;
+        
     }
     else {
         fetchLimit = (_currentFollowingPage +1) *kMaxItemsPerPage;
@@ -239,15 +207,33 @@
         NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
         [request setFetchLimit:fetchLimit];
         //set sort descriptor
+        
+        NSString *sortingKey = nil;
+        if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+            sortingKey = @"followerRelationshipCreated";
+        }
+        else {
+            sortingKey = @"followingRelationshipCreated";
+        }
+        
+        NSSortDescriptor *followingSortDescriptor = [[NSSortDescriptor alloc] initWithKey:sortingKey ascending:NO selector:@selector(compare:)];
+        [request setSortDescriptors:[NSArray arrayWithObjects:followingSortDescriptor, /*nameSortDescriptor,*/ nil]];
+        self.searchResults = [User MR_executeFetchRequest:request];
+    }
+    else {
+
+        NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
+        [request setFetchLimit:fetchLimit];
+        //set sort descriptor
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
         [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-        self.searchResults = [User MR_executeFetchRequest:request];
-    } else {
-#warning also need localizedcaseinsensitive sort descriptor
+        
         NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
-        self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
+        [request setPredicate:predicate];
+        
+        self.searchResults = [User MR_executeFetchRequest:request];
     }
     [self reloadTableView];
 }
@@ -268,6 +254,7 @@
     int result = [self.searchResults count];
     
     if (_controllerType == CONTROLLER_TYPE_FOLLOWERS) {
+        
         if ((_currentFollowersPage+1)*kMaxItemsPerPage < _totalFollowers ) {
             if (result > 0)
             {
@@ -280,6 +267,12 @@
                         //search active, we show loading indicator at bottom
                         result++;
                     }
+                }
+            }
+            else {
+                if (_searchActive) {
+                    //search active, we show loading indicator at bottom
+                    result++;
                 }
             }
         }
@@ -297,6 +290,12 @@
                         //search active, we show loading indicator at bottom
                         result++;
                     }
+                }
+            }
+            else {
+                if (_searchActive) {
+                    //search active, we show loading indicator at bottom
+                    result++;
                 }
             }
         }
@@ -329,6 +328,7 @@
         
         User *user = [self.searchResults objectAtIndex:indexPath.row];
         cell.usernameTitle.text = user.name;
+        
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:user.avatarUrl]];
         [cell.userImageView setImageWithURLRequest:request
                                   placeholderImage:nil
@@ -336,12 +336,10 @@
                                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                                    UIImage *anImage = [image imageByScalingAndCroppingForSize:CGSizeMake(48 * [UIScreen mainScreen].scale, 48 * [UIScreen mainScreen].scale)];
                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                       SDFollowingCell *myCell = (SDFollowingCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-                                                       myCell.userImageView.image = anImage;
+                                                       cell.userImageView.image = anImage;
                                                    });
                                                });
                                            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                               //
                                            }];
         
         //check for following
@@ -487,6 +485,7 @@
                 [self filterContentForSearchText:_searchBar.text];
             } failureBlock:^{
                 _searchActive = NO;
+                [self reloadTableView];
             }];
         }
     }
@@ -499,6 +498,7 @@
                 [self filterContentForSearchText:_searchBar.text];
             } failureBlock:^{
                 _searchActive = NO;
+                [self reloadTableView];
             }];
         }
     }

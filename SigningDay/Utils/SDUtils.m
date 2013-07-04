@@ -31,14 +31,19 @@
      NSLog(@"Database compatible");
      [MagicalRecord setupCoreDataStack];
      }*/
+    BOOL needsLogout = NO;
     if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"buildVersion"] intValue] < [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue]) {
         NSError *error;
         [[NSFileManager defaultManager] removeItemAtPath:[NSPersistentStore MR_defaultLocalStoreUrl].path
                                                    error:&error];
         [[NSUserDefaults standardUserDefaults] setObject:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] forKey:@"buildVersion"];
-        [SDLoginService logout];
+        needsLogout = YES;
     }
     [MagicalRecord setupCoreDataStack];
+    
+    if (needsLogout) {
+        [SDLoginService logout];
+    }
 }
 
 
