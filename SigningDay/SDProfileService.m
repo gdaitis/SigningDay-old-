@@ -73,7 +73,7 @@
                                                                                                     
                                                                                                     [context MR_save];
                                                                                                     
-                                                                                                    NSString *photosCountPath = [[[NSString stringWithFormat:@"search.json?pagesize=1&filters=type::file||section::4||user::%d", [identifier integerValue]] stringByReplacingOccurrencesOfString:@":" withString:@"%3A"] stringByReplacingOccurrencesOfString:@"|" withString:@"%7C"];
+                                                                                                    NSString *photosCountPath = [[[NSString stringWithFormat:@"search.json?pagesize=1&filters=type::file||section::%d||user::%d", [master.photoGalleryId integerValue], [identifier integerValue]] stringByReplacingOccurrencesOfString:@":" withString:@"%3A"] stringByReplacingOccurrencesOfString:@"|" withString:@"%7C"];
 
                                                                                                     [[SDAPIClient sharedClient] getPath:photosCountPath
                                                                                                                              parameters:nil
@@ -86,7 +86,7 @@
                                                                                                                                     
                                                                                                                                     [context MR_save];
                                                                                                                                     
-                                                                                                                                    NSString *videosCountPath = [[[NSString stringWithFormat:@"search.json?pagesize=1&filters=type::file||section::5||user::%d", [identifier integerValue]] stringByReplacingOccurrencesOfString:@":" withString:@"%3A"] stringByReplacingOccurrencesOfString:@"|" withString:@"%7C"];
+                                                                                                                                    NSString *videosCountPath = [[[NSString stringWithFormat:@"search.json?pagesize=1&filters=type::file||section::%d||user::%d", [master.videoGalleryId integerValue], [identifier integerValue]] stringByReplacingOccurrencesOfString:@":" withString:@"%3A"] stringByReplacingOccurrencesOfString:@"|" withString:@"%7C"];
                                                                                                                                     [[SDAPIClient sharedClient] getPath:videosCountPath
                                                                                                                                                              parameters:nil
                                                                                                                                                                 success:^(AFHTTPRequestOperation *operation, id JSON) {
