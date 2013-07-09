@@ -19,7 +19,7 @@
 
 @end
 
-@interface SDConversationsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SDLoginViewControllerDelegate, SDNavigationControllerDelegate, SDNewConversationViewControllerDelegate>
+@interface SDConversationsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SDLoginViewControllerDelegate, SDNavigationControllerDelegate/*, SDNewConversationViewControllerDelegate*/>
 
 @property (nonatomic, strong) id <SDConversationsViewControllerDelegate> delegate;
 

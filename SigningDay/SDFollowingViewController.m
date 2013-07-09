@@ -108,7 +108,7 @@
     else {
         self.title = @"FOLLOWING";
     }
-
+    [SDFollowingService removeFollowing:YES andFollowed:YES];
     [self updateInfoAndShowActivityIndicator:YES];
 }
 
@@ -116,8 +116,6 @@
 {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
-    
-    [SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (void)didReceiveMemoryWarning

@@ -112,7 +112,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldShowNotification object:nil];
-    [SDFollowingService removeFollowing:YES andFollowed:YES];
+    //[SDFollowingService removeFollowing:YES andFollowed:YES];
     
     _viewVisible = YES;
     
@@ -182,9 +182,10 @@
 
 - (void)newMessagePressed
 {
-    SDNavigationController *newConversationNavigationController = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"NewConversationNavigationController"];
-    newConversationNavigationController.myDelegate = self;
-    [self presentModalViewController:newConversationNavigationController animated:YES];
+    SDNewConversationViewController *newConversationController = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"NewConversationController"];
+    //newConversationController.delegate = self;
+    //[self presentModalViewController:newConversationNavigationController animated:YES];
+    [self.navigationController pushViewController:newConversationController animated:YES];
 }
 
 - (void)viewDidUnload
@@ -315,24 +316,24 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - SDNewConversationViewController delegate methods
-
-- (void)newConversationViewController:(SDNewConversationViewController *)newConversationViewController didFinishPickingUser:(User *)user
-{
-    [self dismissModalViewControllerAnimated:YES];
-    
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
-    Conversation *conversation = [Conversation MR_createInContext:context];
-    [conversation addUsersObject:user];
-    [context MR_save];
-    
-    SDConversationViewController *conversationViewController = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"ConversationViewController"];
-    conversationViewController.conversation = conversation;
-    conversationViewController.isNewConversation = YES;
-    
-    [self.navigationController pushViewController:conversationViewController animated:YES];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
-}
+//#pragma mark - SDNewConversationViewController delegate methods
+//
+//- (void)newConversationViewController:(SDNewConversationViewController *)newConversationViewController didFinishPickingUser:(User *)user
+//{
+//    [self dismissModalViewControllerAnimated:YES];
+//    
+//    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+//    Conversation *conversation = [Conversation MR_createInContext:context];
+//    [conversation addUsersObject:user];
+//    [context MR_save];
+//    
+//    SDConversationViewController *conversationViewController = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+//    conversationViewController.conversation = conversation;
+//    conversationViewController.isNewConversation = YES;
+//    
+//    [self.navigationController pushViewController:conversationViewController animated:YES];
+//    [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
+//}
 
 #pragma mark - SDSettingsViewController delegate methods
 

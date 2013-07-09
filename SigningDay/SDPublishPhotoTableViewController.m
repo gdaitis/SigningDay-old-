@@ -30,7 +30,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [SDFollowingService removeFollowing:YES andFollowed:YES];
+    //[SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (IBAction)publishPhotoPressed:(id)sender

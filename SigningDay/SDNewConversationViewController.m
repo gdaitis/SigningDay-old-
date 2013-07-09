@@ -19,6 +19,7 @@
 #import "AFNetworking.h"
 #import "MBProgressHUD.h"
 #import "SDFollowingService.h"
+#import "SDConversationViewController.h"
 
 @interface SDNewConversationViewController ()
 
@@ -66,13 +67,13 @@
     SDNavigationController *navigationController = (SDNavigationController *)self.navigationController;
     self.delegate = (id <SDNewConversationViewControllerDelegate>)navigationController.myDelegate;
     
-    UIImage *image = [UIImage imageNamed:@"x_button_yellow.png"];
+    UIImage *image = [UIImage imageNamed:@"back_nav_button.png"];
     CGRect frame = CGRectMake(0, 0, image.size.width, image.size.height);
     UIButton *button = [[UIButton alloc] initWithFrame:frame];
     [button setBackgroundImage:image forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(cancelButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self.navigationController action:@selector(popViewControllerAnimated:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
-    self.navigationItem.leftBarButtonItem = barButton;
+    self.navigationItem.leftBarButtonItem = barButton;  
     
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chat_bg.png"]];
     [imageView setFrame:self.tableView.bounds];
@@ -84,13 +85,16 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSDTabBarShouldHideNotification object:nil];
+    
+    [SDFollowingService removeFollowing:YES andFollowed:YES];
     [self updateInfoAndShowActivityIndicator:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    [SDFollowingService removeFollowing:YES andFollowed:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -152,6 +156,8 @@
 
 - (void)filterContentForSearchText:(NSString*)searchText
 {
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    
     self.searchResults = nil;
     NSString *username = [[NSUserDefaults standardUserDefaults] valueForKey:@"username"];
     
@@ -160,18 +166,24 @@
     
     if ([searchText isEqual:@""]) {
         //seting fetch limit for pagination
-        NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate];
+        NSFetchRequest *request = [User MR_requestAllWithPredicate:masterUsernamePredicate inContext:context];
         [request setFetchLimit:fetchLimit];
         //set sort descriptor
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
         [request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-        self.searchResults = [User MR_executeFetchRequest:request];
+        self.searchResults = [User MR_executeFetchRequest:request
+                                                inContext:context];
     } else {
         NSPredicate *usernameSearchPredicate = [NSPredicate predicateWithFormat:@"username contains[cd] %@ OR name contains[cd] %@", searchText, searchText];
         NSArray *predicatesArray = [NSArray arrayWithObjects:masterUsernamePredicate, usernameSearchPredicate, nil];
         NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicatesArray];
-        self.searchResults = [User MR_findAllSortedBy:@"name" ascending:YES withPredicate:predicate];
+        self.searchResults = [User MR_findAllSortedBy:@"name"
+                                            ascending:YES
+                                        withPredicate:predicate
+                                            inContext:context];
     }
+    [context MR_save];
+    
     [self reloadTableView];
 }
 
@@ -313,7 +325,18 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     User *user = [self.searchResults objectAtIndex:indexPath.row];
-    [self.delegate newConversationViewController:self didFinishPickingUser:user];
+    
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    Conversation *conversation = [Conversation MR_createInContext:context];
+    [conversation addUsersObject:user];
+    [context MR_save];
+    
+    SDConversationViewController *conversationViewController = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+    conversationViewController.conversation = conversation;
+    conversationViewController.isNewConversation = YES;
+    
+    [self.navigationController pushViewController:conversationViewController animated:YES];
+
 }
 
 #pragma mark - UISearchDisplayController delegate methods

@@ -20,6 +20,7 @@
 #import "UIImage+Crop.h"
 #import "SDTabBarController.h"
 #import "AFNetworking.h"
+#import "SDNewConversationViewController.h"
 
 #define VIEW_WIDTH    self.containerView.frame.size.width
 #define VIEW_HEIGHT    self.containerView.frame.size.height
@@ -91,6 +92,16 @@ static CGFloat const kChatBarHeight4    = 104.0f;
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];
+    for (UIViewController *viewController in self.navigationController.viewControllers) {
+        if ([viewController isKindOfClass:[SDNewConversationViewController class]]) {
+            [viewControllers removeObject:viewController];
+            break;
+        }
+    }
+    
+    self.navigationController.viewControllers = [NSArray arrayWithArray:viewControllers];
     
     self.firstLoad = YES;
     
@@ -168,11 +179,11 @@ static CGFloat const kChatBarHeight4    = 104.0f;
     
     //reset messages
     _currentMessagesPage = _totalMessages = 0;
+    [self checkServer];
     if (self.firstLoad) {
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
         hud.labelText = @"Updating chat";
     }
-    [self checkServer];
 }
 
 - (void)viewDidAppear:(BOOL)animated
