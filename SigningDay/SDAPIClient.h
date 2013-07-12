@@ -15,7 +15,7 @@ extern NSString * const kSDOldAPIBaseURLString;
 extern NSString * const kSDAPIBaseURLString;
 
 @interface SDAPIClient : AFHTTPClient
-
+ 
 + (SDAPIClient *)sharedClient;
 - (void)setRestTokenHeaderWithToken:(NSString *)token;
 
