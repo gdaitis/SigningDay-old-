@@ -93,7 +93,7 @@
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
-                                            user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
+                                            user.identifier = followersUserIdentifier;
                                             user.username = [userInfo valueForKey:@"Username"];
                                             user.master = master;
                                         }
@@ -133,6 +133,7 @@
                                     
                                     for (NSDictionary *userInfo in followings) {
                                         NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"UserId"];
+                                        NSLog(@"followingsUserIdentifier = %@",followingsUserIdentifier);
                                         
                                         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followingsUserIdentifier];
                                         User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
@@ -178,11 +179,10 @@
                                     for (NSDictionary *userInfo in followers) {
                                         NSNumber *followersUserIdentifier = [userInfo valueForKey:@"UserId"];
                                         
-                                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier == %@", followersUserIdentifier];
-                                        User *user = [User MR_findFirstWithPredicate:predicate inContext:context];
+                                        User *user = [User MR_findFirstByAttribute:@"identifier" withValue:followersUserIdentifier];
                                         if (!user) {
                                             user = [User MR_createInContext:context];
-                                            user.identifier = [NSNumber numberWithInt:[[userInfo valueForKey:@"Id"] integerValue]];
+                                            user.identifier = followersUserIdentifier;
                                             user.username = [userInfo valueForKey:@"Username"];
                                             user.master = master;
                                         }
@@ -278,6 +278,7 @@
                                      for (NSDictionary *userInfo in results) {
                                          
                                          NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"UserId"];
+                                         
                                          User *user = [User MR_findFirstByAttribute:@"identifier" withValue:followingsUserIdentifier];
                                          
                                          if (!user) {
@@ -321,6 +322,7 @@
                                      for (NSDictionary *userInfo in results) {
                                          
                                          NSNumber *followingsUserIdentifier = [userInfo valueForKey:@"UserId"];
+                                         
                                          User *user = [User MR_findFirstByAttribute:@"identifier" withValue:followingsUserIdentifier];
                                          
                                          if (!user) {
@@ -373,6 +375,7 @@
                 //user doesn't have mutual conversation, and is not being followed or following master user, so it is going to be deleted
                 if (![[user.username lowercaseString] isEqualToString:[username lowercaseString]]) {
                     //not master user can delete
+                    NSLog(@"User deleted: %@",user.name);
                     [context deleteObject:user];
                 }
             }
