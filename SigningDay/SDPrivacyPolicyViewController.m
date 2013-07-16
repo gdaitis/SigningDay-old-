@@ -16,7 +16,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    NSString *urlString = [NSString stringWithFormat:@"%@/p/privacypolicy.aspx", kSDBaseSigningDayURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/p/privacy.aspx", kSDBaseSigningDayURLString];
     NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
