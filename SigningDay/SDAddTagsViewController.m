@@ -14,7 +14,7 @@
 #import "User.h"
 #import "MBProgressHUD.h"
 #import "SDAddTagsCell.h"
-
+#import "AFNetworking.h"
 #import "SDFollowingService.h"
 
 @interface SDAddTagsViewController () <UISearchDisplayDelegate, UISearchBarDelegate>
@@ -90,6 +90,10 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     self.selectedTags = [[NSMutableArray alloc] init];
+    for (User *tagUser in [self.delegate arrayOfAlreadySelectedTags]) {
+        [self.selectedTags addObject:tagUser];
+    }
+    
     [self checkDoneButton];
 }
 
@@ -269,11 +273,7 @@
         cell.userImageView.image = nil;
         
         User *user = [self.searchResults objectAtIndex:indexPath.row];
-//        for (User *tagUser in [self.delegate arrayOfAlreadySelectedTags]) {
-//            if ([tagUser.identifier isEqualToNumber:user.identifier]) {
-//                cell.isChecked = YES;
-//            }
-//        }
+
         if ([self.selectedTags containsObject:user]) {
             cell.isChecked = YES;
         }
@@ -282,7 +282,19 @@
         }
         
         cell.userTitleLabel.text = user.name;
-        cell.userAvatarUrlString = user.avatarUrl;
+        
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:user.avatarUrl]];
+        [cell.userImageView setImageWithURLRequest:request
+                                  placeholderImage:nil
+                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                               
+                                               SDAddTagsCell *myCell = (SDAddTagsCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+                                               myCell.userImageView.image = image;
+                                               
+                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                               //
+                                           }];
+        
         [self checkDoneButton];
         return cell;
     }

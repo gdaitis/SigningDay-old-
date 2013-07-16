@@ -23,7 +23,6 @@
 @synthesize bottomLine = _bottomLine;
 @synthesize userImageView = _userImageView;
 @synthesize userTitleLabel = _userTitleLabel;
-@synthesize userAvatarUrlString = _userAvatarUrlString;
 @synthesize isChecked = _isChecked;
 
 - (void)awakeFromNib
@@ -45,14 +44,6 @@
     } else {
         self.backgroundView.backgroundColor = [UIColor whiteColor];
     }
-}
-
-- (void)setUserAvatarUrlString:(NSString *)userAvatarUrlString
-{
-    [[SDImageService sharedService] getImageWithURLString:userAvatarUrlString
-                                                  success:^(UIImage *image) {
-        self.userImageView.image = [image imageByScalingAndCroppingForSize:CGSizeMake(48 * [UIScreen mainScreen].scale, 48 * [UIScreen mainScreen].scale)];
-    }];
 }
 
 - (void)setIsChecked:(BOOL)isChecked

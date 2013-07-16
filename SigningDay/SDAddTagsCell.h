@@ -12,7 +12,6 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *userImageView;
 @property (weak, nonatomic) IBOutlet UILabel *userTitleLabel;
-@property (nonatomic, strong) NSString *userAvatarUrlString;
 @property (nonatomic) BOOL isChecked;
 
 @end

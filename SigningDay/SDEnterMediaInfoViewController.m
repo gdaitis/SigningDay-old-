@@ -263,7 +263,7 @@
     
     NSMutableArray *namesArray = [[NSMutableArray alloc] init];
     for (User *user in tagUsersArray) {
-        [namesArray addObject:user.username];
+        [namesArray addObject:user.name];
     }
     self.tagsArray = namesArray;
     
